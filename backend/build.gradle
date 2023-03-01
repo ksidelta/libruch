@@ -44,6 +44,8 @@ dependencies {
 
 	testImplementation "org.testcontainers:postgresql:1.17.6"
 	testImplementation("org.hamcrest:hamcrest:2.2")
+	implementation "org.springframework.security:spring-security-core"
+
 
 }
 

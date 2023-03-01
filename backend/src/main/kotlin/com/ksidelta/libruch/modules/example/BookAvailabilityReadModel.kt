@@ -5,11 +5,10 @@ import com.ksidelta.libruch.utils.handle
 import org.axonframework.eventhandling.DomainEventMessage
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.messaging.MetaData
-import org.axonframework.queryhandling.QueryHandler
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
-import java.util.UUID
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
 

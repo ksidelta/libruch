@@ -61,7 +61,7 @@ data class RegisterNewBook(val isbn: String, val owner: Party)
 data class BorrowBook(@TargetAggregateIdentifier val bookId: UUID, val renter: Party)
 data class ReturnBook(@TargetAggregateIdentifier val bookId: UUID, val renter: Party)
 
-class NewBookRegistered(val bookId: UUID, val isbn: String, val owner: Party)
+data class NewBookRegistered(val bookId: UUID, val isbn: String, val owner: Party)
 data class BookBorrowed(val renter: Party)
 class BookReturned()
 
