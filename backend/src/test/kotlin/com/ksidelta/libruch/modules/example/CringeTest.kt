@@ -1,0 +1,45 @@
+package com.ksidelta.libruch.modules.example
+
+import com.ksidelta.libruch.BaseTest
+import com.ksidelta.libruch.modules.kernel.Party
+import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.messaging.responsetypes.ResponseTypes
+import org.axonframework.queryhandling.QueryGateway
+import org.hamcrest.CoreMatchers.equalTo
+import org.hamcrest.MatcherAssert.*
+import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import java.util.*
+
+@SpringBootTest
+class CringeTest : BaseTest() {
+    @Autowired
+    lateinit var commandGateway: CommandGateway
+
+    @Autowired
+    lateinit var queryGateway: QueryGateway
+
+    @Test
+    fun givenReturnedBookWhenQueriedForAllBooksThenBookIsProperlyDefined() {
+        val party = Party(UUID.randomUUID())
+        val borrowingParty = Party(UUID.randomUUID())
+        val bookIsbn = "978-0134494166"
+
+        val aggregateId = commandGateway.send<UUID>(RegisterNewBook(bookIsbn, party)).get()
+        commandGateway.send<Any>(BorrowBook(aggregateId, borrowingParty)).get()
+        commandGateway.send<Any>(ReturnBook(aggregateId, borrowingParty)).get()
+
+
+        val ret =
+            queryGateway.query(QueryAllBooks(), ResponseTypes.multipleInstancesOf(BookAvailabilityModel::class.java))
+                .get()
+
+
+        assertThat(ret, equalTo(listOf(BookAvailabilityModel(
+            status = BookState.AVAILABLE,
+            id = aggregateId,
+            isbn = bookIsbn
+        ))))
+    }
+}

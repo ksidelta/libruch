@@ -6,9 +6,12 @@ import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle.apply
+import org.axonframework.modelling.command.TargetAggregateIdentifier
+import org.axonframework.spring.stereotype.Aggregate
 import java.util.*
 
-class BookAggregate {
+@Aggregate
+class BookAggregate() {
     @AggregateIdentifier
     lateinit var bookId: UUID
 
@@ -16,17 +19,16 @@ class BookAggregate {
     var borrower: Party? = null
 
     @CommandHandler
-    constructor(command: RegisterNewBook) {
-        apply(command.apply { NewBookRegistered(bookId = UUID.randomUUID(), isbn = isbn, owner = owner) })
+    constructor(command: RegisterNewBook) : this() {
+        apply(command.run { NewBookRegistered(bookId = UUID.randomUUID(), isbn = isbn, owner = owner) })
     }
 
     @CommandHandler
     fun borrowBook(borrowBook: BorrowBook) =
         if (bookState == BookState.AVAILABLE)
-            apply(borrowBook.apply { BookBorrowed(renter) })
+            apply(borrowBook.run { BookBorrowed(renter) })
         else
             throw BookAlreadyBorrowed()
-
 
     @CommandHandler
     fun returnBook(returnBook: ReturnBook) =
@@ -56,8 +58,8 @@ class BookAggregate {
 
 
 data class RegisterNewBook(val isbn: String, val owner: Party)
-data class BorrowBook(val renter: Party)
-data class ReturnBook(val renter: Party)
+data class BorrowBook(@TargetAggregateIdentifier val bookId: UUID, val renter: Party)
+data class ReturnBook(@TargetAggregateIdentifier val bookId: UUID, val renter: Party)
 
 class NewBookRegistered(val bookId: UUID, val isbn: String, val owner: Party)
 data class BookBorrowed(val renter: Party)
