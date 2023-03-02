@@ -1,0 +1,17 @@
+version: "3.4"
+
+services:
+  frontend:
+    # image: frontend
+    restart: on-failure
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - 3000:3000
+      - 24678:24678
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    environment:
+      PORT: 3000
