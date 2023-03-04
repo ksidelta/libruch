@@ -22,7 +22,7 @@ class BorrowingAggregate() {
 
     @CommandHandler
     constructor(command: RegisterNewBorrowing): this() {
-
+        applyEvent(RegisteredNewBorrowing(command.isbn, UUID.randomUUID()))
     }
 
     @CommandHandler
@@ -57,7 +57,8 @@ class BorrowingAggregate() {
 
 data class FindBorrowings (val isbn: String)
 
-data class RegisterNewBorrowing (val isbn: String, val uuid: UUID)
+data class RegisterNewBorrowing (val isbn: String)
+data class RegisteredNewBorrowing (val isbn: String, val uuid: UUID)
 
 data class BorrowCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
 data class ReturnCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
