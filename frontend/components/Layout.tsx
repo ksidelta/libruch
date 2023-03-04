@@ -3,6 +3,7 @@ import { useState, ChangeEvent, MouseEvent } from "react";
 import Container from "@mui/material/Container";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -15,10 +16,6 @@ import Menu from "@mui/material/Menu";
 const Navbar = () => {
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAuth(event.target.checked);
-  };
 
   const handleMenu = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -84,13 +81,17 @@ const Navbar = () => {
                 </MenuItem>
               </Menu>
             </div>
-          )) || (
-            <Button onClick={() => setAuth(true)} color="inherit">
-              Zaloguj się
-            </Button>
-          )}
+          ))}
         </Toolbar>
       </AppBar>
+    </Box>
+  );
+};
+
+const Footer = () => {
+  return (
+    <Box>
+      Copyright (ć) <a href="https://hsp.sh">hsp.sh</a>
     </Box>
   );
 };
@@ -98,8 +99,15 @@ const Navbar = () => {
 export const UnauthorizedLayout = ({ children }) => {
   return (
     <>
-      <Navbar />
-      <Container maxWidth="lg">{children}</Container>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Container maxWidth="lg">{children}</Container>
+        <Footer />
+      </Grid>
     </>
   );
 };
@@ -108,7 +116,15 @@ export const AuthorizedLayout = ({ children }) => {
   return (
     <>
       <Navbar />
-      <Container maxWidth="lg">{children}</Container>
+      <Grid
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Container maxWidth="lg">{children}</Container>
+        <Footer />
+      </Grid>
     </>
   );
 };
