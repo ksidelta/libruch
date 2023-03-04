@@ -1,5 +1,9 @@
+import {UnauthorizedLayout} from "../components/Layout";
+
 const Login =() =>{
-    return <div>przycisk googla, który przekierowuje na backend</div>
+    return <UnauthorizedLayout>
+    <div>przycisk googla, który przekierowuje na backend</div>
+    </UnauthorizedLayout>
 }
 
 export default Login
