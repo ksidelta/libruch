@@ -58,6 +58,7 @@ class BorrowingAggregate() {
     fun on(evt: CopyReturned) {
         this.copyState = CopyState.AVAILABLE
         this.borrower = null
+        this.returnDeadline = null
     }
 
 }
