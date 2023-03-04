@@ -5,5 +5,5 @@ ADD . .
 RUN ./gradlew build -x check 
 
 FROM openjdk:11
-COPY --from=0 target/*.jar app.jar
+COPY --from=0 build/libs/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]
