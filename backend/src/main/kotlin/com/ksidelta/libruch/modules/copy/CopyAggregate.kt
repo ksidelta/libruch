@@ -38,5 +38,3 @@ data class RegisterNewCopy(val isbn: String, val owner: Party)
 
 
 data class NewCopyRegistered(val copyId: UUID, val isbn: String, val owner: Party)
-data class CopyBorrowed(val borrower: Party)
-class CopyReturned()
