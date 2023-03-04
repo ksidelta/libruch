@@ -15,7 +15,6 @@ interface UserModelRepository : CrudRepository<UserModel, UserIdKey> {
 }
 
 @Entity(name = "user_model")
-@IdClass(UserIdKey::class)
 data class UserModel(
     @EmbeddedId
     val userId: UserIdKey,

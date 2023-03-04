@@ -14,7 +14,7 @@ import javax.persistence.Id
 
 
 @Service
-class EventProcessor(val bookReadModelRepository: BookReadModelRepository) {
+class ExampleEventProcessor(val bookReadModelRepository: BookReadModelRepository) {
     @EventHandler
     fun handle(event: NewBookRegistered, metadata: MetaData) =
         bookReadModelRepository.save(

@@ -13,14 +13,14 @@ import kotlin.collections.Collection
 
 
 @Service
-class EventProcessor(val copyReadModelRepository: CopyReadModelRepository) {
+class CopyEventProcessor(val copyReadModelRepository: CopyReadModelRepository) {
     @EventHandler
     fun handle(event: NewCopyRegistered, metadata: MetaData) =
         copyReadModelRepository.save(
             CopyAvailabilityModel(
                 id = event.copyId,
                 isbn = event.isbn,
-                owner = event.owner,
+                owner = event.owner.partyId,
             )
         )
 }
@@ -36,7 +36,7 @@ data class CopyAvailabilityModel(
     @Id
     val id: UUID,
     val isbn: String,
-    val owner: Party,
+    val owner: UUID,
 )
 
 

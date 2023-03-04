@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.util.*
 
 @RestController
@@ -19,15 +20,15 @@ class BorrowingController (
 ) {
 
     @PostMapping(path = ["/borrow"])
-    suspend fun borrowCopy(@RequestBody body: BorrowCopyDTO) {
-        userProvider.withUser { party ->
+    suspend fun borrowCopy(principal: Principal, @RequestBody body: BorrowCopyDTO) {
+        userProvider.withUser(principal) { party ->
                 commandGateway.send<Any>(BorrowCopy(body.id, party)).await()
         }
     }
 
     @PostMapping(path = ["/return"])
-    suspend fun returnCopy(@RequestBody body: ReturnCopyDTO) {
-        userProvider.withUser {  party ->
+    suspend fun returnCopy(principal: Principal, @RequestBody body: ReturnCopyDTO) {
+        userProvider.withUser(principal) {  party ->
                 commandGateway.send<Any>(ReturnCopy(body.id, party)).await()
         }
     }

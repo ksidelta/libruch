@@ -9,7 +9,7 @@ import javax.persistence.Entity
 import javax.persistence.Id
 
 @Service
-class EventProcessor(val borrowingReadModelRepository: BorrowingReadModelRepository) {
+class BorrowingEventProcessor(val borrowingReadModelRepository: BorrowingReadModelRepository) {
     @EventHandler
     fun handle(event: RegisteredNewBorrowing) =
         borrowingReadModelRepository.save(

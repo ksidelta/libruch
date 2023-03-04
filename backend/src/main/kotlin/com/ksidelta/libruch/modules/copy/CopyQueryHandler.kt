@@ -5,7 +5,7 @@ import org.axonframework.queryhandling.QueryHandler
 import org.springframework.stereotype.Service
 
 @Service
-class QueryHandler(val copyReadModelRepository: CopyReadModelRepository) {
+class CopyQueryHandler(val copyReadModelRepository: CopyReadModelRepository) {
     @QueryHandler
     fun query(queryAllCopies: QueryAllCopies) =
         copyReadModelRepository.findAll().toList()
