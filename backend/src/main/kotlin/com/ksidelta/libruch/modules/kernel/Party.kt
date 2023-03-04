@@ -3,4 +3,11 @@ package com.ksidelta.libruch.modules.kernel
 import java.util.UUID
 
 // This should be a party archetype, but it sucks :)
-data class Party(val partyId: UUID)
+sealed class Party(val partyId: UUID) {
+
+    data class User(val id: UUID): Party(partyId = id) {
+        val organisations: Set<Organisation> = emptySet()
+    }
+
+    data class Organisation(val id: UUID) : Party(partyId = id)
+}
