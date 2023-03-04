@@ -20,7 +20,7 @@ import java.util.*
 class BorrowingAggregate() {
 
     @AggregateIdentifier
-    lateinit var borrowing: UUID
+    lateinit var borrowingId: UUID
 
     var copyState = CopyState.AVAILABLE
     var borrower: Party? = null
