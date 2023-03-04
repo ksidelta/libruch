@@ -7,6 +7,8 @@ import org.axonframework.extensions.kotlin.applyEvent
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.TargetAggregateIdentifier
 import org.axonframework.spring.stereotype.Aggregate
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -19,6 +21,10 @@ class BorrowingAggregate() {
 
     @AggregateIdentifier
     lateinit var borrowing: UUID
+
+    var copyState = CopyState.AVAILABLE
+    var borrower: Party? = null
+    var deadline: Instant? = null
 
     @CommandHandler
     constructor(command: RegisterNewBorrowing): this() {
@@ -40,10 +46,12 @@ class BorrowingAggregate() {
             borrower != returnCopy.borrower -> throw OnlyBorrowerMayReturnCopy()
             else -> applyEvent(CopyReturned())
         }
+
     @EventSourcingHandler
     fun on(evt: CopyBorrowed) {
         this.copyState = CopyState.BORROWED
         this.borrower = evt.borrower
+        this.deadline = Instant.now().plus(30, ChronoUnit.DAYS)
     }
 
     @EventSourcingHandler
@@ -51,8 +59,7 @@ class BorrowingAggregate() {
         this.copyState = CopyState.AVAILABLE
         this.borrower = null
     }
-    var copyState = CopyState.AVAILABLE
-    var borrower: Party? = null
+
 }
 
 data class FindBorrowings (val isbn: String)
