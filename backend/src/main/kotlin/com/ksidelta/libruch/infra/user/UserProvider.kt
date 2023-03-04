@@ -35,5 +35,5 @@ data class User(val id: UUID);
 
 suspend fun <R> UserProvider.withParty(func: suspend (Party) -> R): R =
     this.getUser()
-        .let { Party(it.id) }
+        .let { Party.User(it.id) }
         .let { func(it) }
