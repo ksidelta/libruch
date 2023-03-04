@@ -10,6 +10,7 @@ import CardContent from "@mui/material/CardContent";
 
 import { UnauthorizedLayout } from "../components/Layout";
 import profilePic from "../public/hello.png";
+import ThemeToggler from "../components/ThemeToggler";
 
 export default function Home() {
   return (
@@ -37,9 +38,11 @@ export default function Home() {
 
               <Box sx={{ m: 4 }}>
                 <Button variant="contained" size="large">
-                  <Link href="/">Zaloguj się z googlem</Link>
+                  <Link href="/books">Zaloguj się z googlem</Link>
                 </Button>
               </Box>
+
+              <ThemeToggler />
             </CardContent>
           </Card>
         </Grid>

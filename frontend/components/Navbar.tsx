@@ -11,6 +11,8 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 
+import ThemeToggler from "./ThemeToggler";
+
 const Navbar = () => {
   const [auth, setAuth] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -75,6 +77,7 @@ const Navbar = () => {
               </Menu>
             </div>
           )}
+          <ThemeToggler />
         </Toolbar>
       </AppBar>
     </Box>

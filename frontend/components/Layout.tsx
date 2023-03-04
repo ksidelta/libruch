@@ -1,7 +1,8 @@
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
+import CssBaseline from "@mui/material/CssBaseline";
 
-import Navbar from "./Navbar"
+import Navbar from "./Navbar";
 
 const Footer = () => {
   return (
@@ -14,6 +15,7 @@ const Footer = () => {
 export const UnauthorizedLayout = ({ children }) => {
   return (
     <>
+      <CssBaseline />
       <Grid
         container
         direction="column"
@@ -30,6 +32,7 @@ export const UnauthorizedLayout = ({ children }) => {
 export const AuthorizedLayout = ({ children }) => {
   return (
     <>
+      <CssBaseline />
       <Navbar />
       <Grid
         container
