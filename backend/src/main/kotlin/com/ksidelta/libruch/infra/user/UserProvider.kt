@@ -2,38 +2,43 @@ package com.ksidelta.libruch.infra.user
 
 import com.ksidelta.libruch.modules.kernel.Party
 import org.springframework.http.HttpStatus
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.util.*
-import java.util.function.Function
 
 interface UserProvider {
-    fun getUser(): User
+    fun getUser(principal: Principal): User
 }
-
 
 @Service
-class MockUserProvider : UserProvider {
-    val userUUID = UUID.randomUUID()
-    override fun getUser(): User = User(userUUID)
-}
+class OAuthUserProvider() : UserProvider {
+    override fun getUser(principal: Principal): User {
+        val realPrincipal: Any = principal
 
-class SpringAuthBasedUserProvider : UserProvider {
-    override fun getUser(): User {
-        val principal = SecurityContextHolder.getContext().authentication.principal
-
-        return when (principal) {
+        return when (realPrincipal) {
             null -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
-            is User -> principal
+            is OAuth2AuthenticationToken -> {
+                val sub = (realPrincipal.principal.attributes["sub"] as String).toInt()
+
+                User(UUID.randomUUID())
+            }
+
             else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
+//        }
         }
     }
 }
 
 data class User(val id: UUID);
 
-suspend fun <R> UserProvider.withUser(func: suspend (Party.User) -> R): R =
-    this.getUser()
+suspend fun <R> UserProvider.withParty(principal: Principal, func: suspend (Party) -> R): R =
+    this.getUser(principal)
+        .let { Party.User(it.id) }
+        .let { func(it) }
+
+suspend fun <R> UserProvider.withUser(principal: Principal, func: suspend (Party.User) -> R): R =
+    this.getUser(principal)
         .let { Party.User(it.id) }
         .let { func(it) }

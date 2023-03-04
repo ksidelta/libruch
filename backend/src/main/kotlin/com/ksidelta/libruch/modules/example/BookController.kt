@@ -1,8 +1,9 @@
 package com.ksidelta.libruch.modules.example
 
-import com.ksidelta.libruch.infra.user.UserProvider
 import com.ksidelta.libruch.infra.user.withUser
 import com.ksidelta.libruch.modules.kernel.Party
+import com.ksidelta.libruch.modules.user.UserService
+import com.ksidelta.libruch.modules.user.withUser
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.messaging.responsetypes.ResponseTypes
@@ -10,37 +11,37 @@ import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.util.*
-import java.util.concurrent.ExecutionException
 
 // TODO: Change this error handling as it makes me nuts!!!
 // Possibly use flux and Complete your way out of here
 @RestController
 @RequestMapping(path = ["/api/books"])
 class BookController(
-    val userProvider: UserProvider,
+    val userService: UserService,
     val commandGateway: CommandGateway,
     val queryGateway: QueryGateway
 ) {
 
     @PostMapping
-    suspend fun create(@RequestBody body: CreateBookDTO) =
+    suspend fun create(principal: Principal, @RequestBody body: CreateBookDTO) =
         body.run {
-            val user = userProvider.getUser()
+            val user = userService.findUser(principal)
             val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party.User(user.id))).await()
             CreatedBookDTO(aggregateId)
         }
 
     @PostMapping(path = ["/borrow"])
-    suspend fun borrowBook(@RequestBody body: BorrowBookDTO) {
-        userProvider.withUser { party ->
+    suspend fun borrowBook(principal: Principal, @RequestBody body: BorrowBookDTO) {
+        userService.withUser(principal) { party ->
             commandGateway.send<Any>(BorrowBook(body.id, party)).await()
         }
     }
 
     @PostMapping(path = ["/return"])
-    suspend fun returnBook(@RequestBody body: ReturnBookDTO) {
-        userProvider.withUser {  party ->
+    suspend fun returnBook(principal: Principal, @RequestBody body: ReturnBookDTO) {
+        userService.withUser(principal) { party ->
             commandGateway.send<Any>(ReturnBook(body.id, party)).await()
         }
     }

@@ -16,7 +16,7 @@ class UserService(val userModelRepository: UserModelRepository) {
 
     @OptIn(ExperimentalStdlibApi::class)
     @Transactional
-    open fun findUser(principal: Principal): Party.User? {
+    fun findUser(principal: Principal): Party.User {
         val userId = principal.userIdFromGoogle()
 
         var userUUID = userModelRepository
@@ -48,3 +48,8 @@ fun Principal?.userIdFromGoogle(): UserIdKey =
 
         else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
     }
+
+suspend fun <R> UserService.withUser(principal: Principal, func: suspend (Party.User) -> R): R =
+    this.findUser(principal)
+        .let { Party.User(it.id) }
+        .let { func(it) }

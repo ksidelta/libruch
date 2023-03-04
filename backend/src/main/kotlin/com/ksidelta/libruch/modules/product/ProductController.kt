@@ -8,6 +8,7 @@ import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 import java.util.*
 
 @RestController
@@ -19,9 +20,9 @@ class ProductController(
 ) {
 
     @PostMapping
-    suspend fun create(@RequestBody body: CreateProductDTO) =
+    suspend fun create(principal: Principal, @RequestBody body: CreateProductDTO) =
         body.run {
-            val user = userProvider.getUser()
+            val user = userProvider.getUser(principal)
             val aggregateId = commandGateway.send<UUID>(RegisterNewProduct(isbn, title, author)).await()
             CreatedProductDTO(aggregateId)
         }
