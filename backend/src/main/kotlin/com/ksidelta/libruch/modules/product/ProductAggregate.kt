@@ -12,23 +12,23 @@ import java.util.*
 class ProductAggregate() {
 
     @AggregateIdentifier
-    lateinit var bookId: UUID
+    lateinit var productId: UUID
 
     @CommandHandler
     constructor(command: RegisterNewProduct) : this() {
-        apply(command.run { NewProductRegistered(bookId = UUID.randomUUID(), isbn = isbn, title = title, author = author) })
+        apply(command.run { NewProductRegistered(productId = UUID.randomUUID(), isbn = isbn, title = title, author = author) })
     }
 
     @EventSourcingHandler
     fun on(evt: NewProductRegistered) {
-        this.bookId = evt.bookId
+        this.productId = evt.productId
     }
 }
 
 
 data class RegisterNewProduct(val isbn: String, val title: String, val author: String)
 
-data class NewProductRegistered(val bookId: UUID, val isbn: String, val title: String, val author: String)
+data class NewProductRegistered(val productId: UUID, val isbn: String, val title: String, val author: String)
 
 
 class ProductAlreadyExist() : Exception("Product Already Exist")
