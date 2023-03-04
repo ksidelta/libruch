@@ -27,7 +27,7 @@ class BookController(
     suspend fun create(@RequestBody body: CreateBookDTO) =
         body.run {
             val user = userProvider.getUser()
-            val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party(user.id))).await()
+            val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party.User(user.id))).await()
             CreatedBookDTO(aggregateId)
         }
 

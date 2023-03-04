@@ -26,8 +26,8 @@ class BookTest : BaseTest() {
 
     @Test
     fun givenReturnedBookWhenQueriedForAllBooksThenBookIsProperlyDefined() = runBlocking {
-        val party = Party(UUID.randomUUID())
-        val borrowingParty = Party(UUID.randomUUID())
+        val party = Party.User(UUID.randomUUID())
+        val borrowingParty = Party.User(UUID.randomUUID())
         val bookIsbn = "978-0134494166"
 
         val aggregateId = commandGateway.send<UUID>(RegisterNewBook(bookIsbn, party)).await()
@@ -55,9 +55,9 @@ class BookTest : BaseTest() {
 
     @Test
     fun givenBorrowedBookWhenDifferentPartyReturnsThenFails(): Unit = runBlocking {
-        val party = Party(UUID.randomUUID())
-        val borrowingParty = Party(UUID.randomUUID())
-        val maliciousParty = Party(UUID.randomUUID())
+        val party = Party.User(UUID.randomUUID())
+        val borrowingParty = Party.User(UUID.randomUUID())
+        val maliciousParty = Party.User(UUID.randomUUID())
         val bookIsbn = "978-0134494166"
 
         val aggregateId = commandGateway.send<UUID>(RegisterNewBook(bookIsbn, party)).await()

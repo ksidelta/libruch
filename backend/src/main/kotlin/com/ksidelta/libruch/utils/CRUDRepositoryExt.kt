@@ -1,10 +1,9 @@
 package com.ksidelta.libruch.utils
 
-import com.ksidelta.libruch.modules.example.BookState
 import org.springframework.data.repository.CrudRepository
 import java.util.function.UnaryOperator
 
-fun <T : Any, ID> CrudRepository<T, ID>.findAndApply(id: ID, application: UnaryOperator<T>) {
+fun <T : Any, ID : Any> CrudRepository<T, ID>.findAndApply(id: ID, application: UnaryOperator<T>) {
     this.findById(id)
         .map(application)
         .map { it.apply { this@findAndApply.save(it) } }
