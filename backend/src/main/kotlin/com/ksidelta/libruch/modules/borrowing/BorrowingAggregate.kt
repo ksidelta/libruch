@@ -27,7 +27,7 @@ class BorrowingAggregate() {
     var returnDeadline: Instant? = null
 
     @CommandHandler
-    constructor(command: RegisterNewBorrowing): this() {
+    constructor(command: RegisterNewBorrowing) : this() {
         applyEvent(RegisteredNewBorrowing(command.isbn, UUID.randomUUID()))
     }
 
@@ -62,10 +62,10 @@ class BorrowingAggregate() {
 
 }
 
-data class FindBorrowings (val isbn: String)
+data class FindBorrowings(val isbn: String)
 
-data class RegisterNewBorrowing (val isbn: String)
-data class RegisteredNewBorrowing (val isbn: String, val uuid: UUID)
+data class RegisterNewBorrowing(val isbn: String)
+data class RegisteredNewBorrowing(val isbn: String, val uuid: UUID)
 
 data class BorrowCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
 data class ReturnCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
@@ -76,6 +76,7 @@ enum class CopyState {
     RESERVED,
     BORROWED,
 }
+
 class CopyAlreadyBorrowed() : Exception("Copy Already Borrowed")
 class CopyAlreadyAvailable() : Exception("Copy Already Returned")
 class OnlyBorrowerMayReturnCopy() : Exception("Copy Returned By Wrong Party")
