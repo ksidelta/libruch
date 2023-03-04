@@ -16,7 +16,7 @@ class EventProcessor(val productReadModelRepository: ProductReadModelRepository)
     fun handle(event: NewProductRegistered, metadata: MetaData) =
         productReadModelRepository.save(
             ProductAvailabilityModel(
-                id = event.bookId,
+                id = event.productId,
                 isbn = event.isbn,
                 title = event.title,
                 author = event.author,
