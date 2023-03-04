@@ -70,6 +70,6 @@ enum class BookState {
     BORROWED
 }
 
-class BookAlreadyBorrowed() : Exception()
-class BookAlreadyAvailable() : Exception()
-class OnlyRenterMayReturnBook() : Exception()
+class BookAlreadyBorrowed() : Exception("Book Already Borrowed")
+class BookAlreadyAvailable() : Exception("Book Already Returned")
+class OnlyRenterMayReturnBook() : Exception("Book Returned By Wrong Party")

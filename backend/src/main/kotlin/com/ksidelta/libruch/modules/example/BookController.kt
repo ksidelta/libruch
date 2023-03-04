@@ -45,9 +45,11 @@ class BookController(
     }
 
     @GetMapping
-    fun listAll(): List<BookAvailabilityDTO> =
+    fun listAll(): BookAvailabilityListDTO =
         queryGateway.query(QueryAllBooks(), ResponseTypes.multipleInstancesOf(BookAvailabilityModel::class.java))
-            .get().map { it.run { BookAvailabilityDTO(id = id, isbn = isbn, status = status) } }
+            .get()
+            .map { it.run { BookAvailabilityDTO(id = id, isbn = isbn, status = status) } }
+            .let { BookAvailabilityListDTO(it) }
 
     @ExceptionHandler(ExecutionException::class)
     fun domainExceptionHandler(ex: ExecutionException): Nothing =
@@ -56,6 +58,7 @@ class BookController(
             is BookAlreadyBorrowed,
             is OnlyRenterMayReturnBook ->
                 throw ResponseStatusException(HttpStatus.BAD_REQUEST, ex.cause!!.message)
+
             else -> throw ex
         }
 }
@@ -65,6 +68,10 @@ data class CreatedBookDTO(val id: UUID);
 
 data class BorrowBookDTO(val id: UUID)
 data class ReturnBookDTO(val id: UUID)
+
+data class BookAvailabilityListDTO(
+    val books: List<BookAvailabilityDTO>
+)
 
 data class BookAvailabilityDTO(
     val id: UUID,

@@ -1,0 +1,30 @@
+@startuml
+
+left to right direction
+
+component Controller
+component Gateway
+component Service
+component Aggregate
+component QueryHandler
+
+package ReadModel{
+    component Repository
+    component EventProcessor
+}
+
+Controller --> Gateway : Simple Query or Command
+Controller --> Service : Complicated ops
+Controller --> Repository : Some CRUD ops
+Service --> Gateway : Query or Command
+
+Gateway --> Aggregate
+Gateway --> QueryHandler
+
+Aggregate --> EventProcessor : Emitted Event
+EventProcessor --> Repository
+QueryHandler --> Repository
+
+@enduml
+
+

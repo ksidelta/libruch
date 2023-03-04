@@ -5,10 +5,10 @@ plugins {
 	id 'io.spring.dependency-management' version '1.0.0.RELEASE'
 	id 'org.jetbrains.kotlin.jvm' version '1.7.10'
 	id 'org.jetbrains.kotlin.plugin.spring' version '1.7.10'
+
 	id 'org.jetbrains.kotlin.plugin.jpa' version '1.7.10'
 	id "org.jetbrains.kotlin.plugin.allopen" version '1.7.10'
 	id "org.jetbrains.kotlin.plugin.noarg" version '1.7.10'
-
 }
 
 group = 'com.ksidelta'
@@ -42,11 +42,12 @@ dependencies {
 	testImplementation 'org.axonframework:axon-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 
+
 	testImplementation "org.testcontainers:postgresql:1.17.6"
 	testImplementation("org.hamcrest:hamcrest:2.2")
 	implementation "org.springframework.security:spring-security-core"
 
-
+	testImplementation 'io.kotest:kotest-assertions-core:5.5.5'
 }
 
 dependencyManagement {

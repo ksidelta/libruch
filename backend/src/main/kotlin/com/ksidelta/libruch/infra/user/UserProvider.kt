@@ -13,12 +13,12 @@ interface UserProvider {
 }
 
 
+@Service
 class MockUserProvider : UserProvider {
     val userUUID = UUID.randomUUID()
     override fun getUser(): User = User(userUUID)
 }
 
-@Service
 class SpringAuthBasedUserProvider : UserProvider {
     override fun getUser(): User {
         val principal = SecurityContextHolder.getContext().authentication.principal

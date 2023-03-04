@@ -1,5 +1,7 @@
 package com.ksidelta.libruch.modules.example
 
+import com.github.grantwest.eventually.EventuallyLambdaMatcher
+import com.github.grantwest.eventually.EventuallyLambdaMatcher.eventuallyEval
 import com.ksidelta.libruch.BaseTest
 import com.ksidelta.libruch.modules.kernel.Party
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
+import java.util.function.Supplier
 
 @SpringBootTest
 class CringeTest : BaseTest() {
@@ -31,19 +34,24 @@ class CringeTest : BaseTest() {
         commandGateway.send<Any>(BorrowBook(aggregateId, borrowingParty)).get()
         commandGateway.send<Any>(ReturnBook(aggregateId, borrowingParty)).get()
 
-
-        val ret =
-            queryGateway.query(QueryAllBooks(), ResponseTypes.multipleInstancesOf(BookAvailabilityModel::class.java))
-                .get()
+        val ret: Supplier<List<BookAvailabilityModel>> =
+            Supplier {
+                queryGateway.query(
+                    QueryAllBooks(),
+                    ResponseTypes.multipleInstancesOf(BookAvailabilityModel::class.java)
+                ).get()
+            }
 
 
         assertThat(
-            ret, equalTo(
-                listOf(
-                    BookAvailabilityModel(
-                        status = BookState.AVAILABLE,
-                        id = aggregateId,
-                        isbn = bookIsbn
+            ret, eventuallyEval(
+                equalTo(
+                    listOf(
+                        BookAvailabilityModel(
+                            status = BookState.AVAILABLE,
+                            id = aggregateId,
+                            isbn = bookIsbn
+                        )
                     )
                 )
             )
