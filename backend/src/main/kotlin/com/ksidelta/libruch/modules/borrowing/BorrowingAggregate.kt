@@ -26,11 +26,6 @@ class BorrowingAggregate() {
     }
 
     @CommandHandler
-    fun findBorrowings(command: FindBorrowings){
-
-    }
-
-    @CommandHandler
     fun borrowCopy(borrowCopy: BorrowCopy) =
         if (copyState == CopyState.AVAILABLE)
             applyEvent(borrowCopy.run { CopyBorrowed(borrower) })
