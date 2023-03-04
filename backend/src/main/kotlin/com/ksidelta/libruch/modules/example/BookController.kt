@@ -1,7 +1,7 @@
 package com.ksidelta.libruch.modules.example
 
 import com.ksidelta.libruch.infra.user.UserProvider
-import com.ksidelta.libruch.infra.user.withParty
+import com.ksidelta.libruch.infra.user.withUser
 import com.ksidelta.libruch.modules.kernel.Party
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
@@ -33,14 +33,14 @@ class BookController(
 
     @PostMapping(path = ["/borrow"])
     suspend fun borrowBook(@RequestBody body: BorrowBookDTO) {
-        userProvider.withParty { party ->
+        userProvider.withUser { party ->
             commandGateway.send<Any>(BorrowBook(body.id, party)).await()
         }
     }
 
     @PostMapping(path = ["/return"])
     suspend fun returnBook(@RequestBody body: ReturnBookDTO) {
-        userProvider.withParty {  party ->
+        userProvider.withUser {  party ->
             commandGateway.send<Any>(ReturnBook(body.id, party)).await()
         }
     }
