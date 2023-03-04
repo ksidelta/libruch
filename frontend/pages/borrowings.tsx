@@ -1,7 +1,13 @@
-import {AuthorizedLayout} from "../components/Layout";
+import { AuthorizedLayout } from "../components/Layout";
 
-const Borrowings =() =>{
-    return <AuthorizedLayout><div>lista książek do wypożyczenia, wypożyczone ksiązki, wypożycz książkę</div></AuthorizedLayout>
-}
+const Borrowings = () => {
+  return (
+    <AuthorizedLayout>
+      <div>
+        lista książek do wypożyczenia, wypożyczone ksiązki, wypożycz książkę
+      </div>
+    </AuthorizedLayout>
+  );
+};
 
-export default Borrowings
+export default Borrowings;

@@ -1,25 +1,23 @@
-import Head from 'next/head';
-import styles from '../styles/Home.module.css';
-import '@fontsource/roboto/300.css';
-import '@fontsource/roboto/400.css';
-import '@fontsource/roboto/500.css';
-import '@fontsource/roboto/700.css';
-import {UnauthorizedLayout} from "../components/Layout";
-import {Button} from "@mui/material";
-
-
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import { UnauthorizedLayout } from "../components/Layout";
+import { Button } from "@mui/material";
 
 export default function Home() {
   return (
-      <>
-          <Head>
-              <title>Libruch</title>
-              <link rel="icon" href="/favicon.ico" />
-          </Head>
-   <UnauthorizedLayout>
-     <h1> hej wypożyczarka książek</h1>
-     <Button>Zaloguj się z googlem</Button>
-   </UnauthorizedLayout>
+    <>
+      <Head>
+        <title>Libruch</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <UnauthorizedLayout>
+        <h1> hej wypożyczarka książek</h1>
+        <Button>Zaloguj się z googlem</Button>
+      </UnauthorizedLayout>
       <style jsx>{`
         main {
           padding: 5rem 0;
@@ -50,7 +48,7 @@ export default function Home() {
         code {
           background: #fafafa;
           border-radius: 5px;
-          padding: 0.75rem; 
+          padding: 0.75rem;
           font-size: 1.1rem;
           font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
             DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
@@ -70,6 +68,6 @@ export default function Home() {
           box-sizing: border-box;
         }
       `}</style>
-      </>
-  )
+    </>
+  );
 }
