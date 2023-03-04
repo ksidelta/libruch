@@ -1,15 +1,14 @@
 package com.ksidelta.libruch.modules.borrowing;
 
 import com.ksidelta.libruch.infra.user.UserProvider
-import com.ksidelta.libruch.infra.user.withParty
+import com.ksidelta.libruch.infra.user.withUser
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
@@ -21,14 +20,14 @@ class BorrowingController (
 
     @PostMapping(path = ["/borrow"])
     suspend fun borrowCopy(@RequestBody body: BorrowCopyDTO) {
-        userProvider.withParty { party ->
+        userProvider.withUser { party ->
                 commandGateway.send<Any>(BorrowCopy(body.id, party)).await()
         }
     }
 
     @PostMapping(path = ["/return"])
     suspend fun returnCopy(@RequestBody body: ReturnCopyDTO) {
-        userProvider.withParty {  party ->
+        userProvider.withUser {  party ->
                 commandGateway.send<Any>(ReturnCopy(body.id, party)).await()
         }
     }
