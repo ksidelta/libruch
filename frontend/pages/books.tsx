@@ -9,6 +9,7 @@ import {
   ListItemText,
 } from "@mui/material";
 
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Book {
@@ -46,7 +47,12 @@ const Books = () => {
   return (
     <AuthorizedLayout>
       <Container>
-        <h1>Moje książki</h1>
+        <h1>
+          Moje książki
+          <IconButton aria-label="add">
+            <AddCircleIcon />
+          </IconButton>
+        </h1>
         <List>
           {myBooks.map(
             ({ title, id, author, thumbnailUrl, unavailableReason }) => {
