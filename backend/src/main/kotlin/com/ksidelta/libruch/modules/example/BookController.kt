@@ -3,6 +3,7 @@ package com.ksidelta.libruch.modules.example
 import com.ksidelta.libruch.infra.user.UserProvider
 import com.ksidelta.libruch.infra.user.withParty
 import com.ksidelta.libruch.modules.kernel.Party
+import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.messaging.responsetypes.ResponseTypes
 import org.axonframework.queryhandling.QueryGateway
@@ -23,44 +24,38 @@ class BookController(
 ) {
 
     @PostMapping
-    fun create(@RequestBody body: CreateBookDTO) =
+    suspend fun create(@RequestBody body: CreateBookDTO) =
         body.run {
             val user = userProvider.getUser()
-            val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party(user.id))).get()
+            val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party(user.id))).await()
             CreatedBookDTO(aggregateId)
         }
 
     @PostMapping(path = ["/borrow"])
-    fun borrowBook(@RequestBody body: BorrowBookDTO) {
+    suspend fun borrowBook(@RequestBody body: BorrowBookDTO) {
         userProvider.withParty { party ->
-            commandGateway.send<Any>(BorrowBook(body.id, party)).get()
+            commandGateway.send<Any>(BorrowBook(body.id, party)).await()
         }
     }
 
     @PostMapping(path = ["/return"])
-    fun returnBook(@RequestBody body: ReturnBookDTO) {
-        userProvider.withParty { party ->
-            commandGateway.send<Any>(ReturnBook(body.id, party)).get()
+    suspend fun returnBook(@RequestBody body: ReturnBookDTO) {
+        userProvider.withParty {  party ->
+            commandGateway.send<Any>(ReturnBook(body.id, party)).await()
         }
     }
 
     @GetMapping
-    fun listAll(): BookAvailabilityListDTO =
+    suspend fun listAll(): BookAvailabilityListDTO =
         queryGateway.query(QueryAllBooks(), ResponseTypes.multipleInstancesOf(BookAvailabilityModel::class.java))
-            .get()
+            .await()
             .map { it.run { BookAvailabilityDTO(id = id, isbn = isbn, status = status) } }
             .let { BookAvailabilityListDTO(it) }
 
-    @ExceptionHandler(ExecutionException::class)
-    fun domainExceptionHandler(ex: ExecutionException): Nothing =
-        when (ex.cause) {
-            is BookAlreadyAvailable,
-            is BookAlreadyBorrowed,
-            is OnlyRenterMayReturnBook ->
-                throw ResponseStatusException(HttpStatus.BAD_REQUEST, ex.cause!!.message)
+    @ExceptionHandler(BookAlreadyBorrowed::class, BookAlreadyAvailable::class, OnlyRenterMayReturnBook::class)
+    fun domainExceptionHandler(ex: Exception): Nothing =
+        throw ResponseStatusException(HttpStatus.BAD_REQUEST, ex.message)
 
-            else -> throw ex
-        }
 }
 
 data class CreateBookDTO(val isbn: String);

@@ -33,7 +33,7 @@ class SpringAuthBasedUserProvider : UserProvider {
 
 data class User(val id: UUID);
 
-fun <R> UserProvider.withParty(func: Function<Party, R>): R =
+suspend fun <R> UserProvider.withParty(func: suspend (Party) -> R): R =
     this.getUser()
         .let { Party(it.id) }
-        .let { func.apply(it) }
+        .let { func(it) }
