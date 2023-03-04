@@ -15,3 +15,19 @@ services:
       - /usr/src/app/node_modules
     environment:
       PORT: 3000
+  backend:
+    build: "backend"
+    environment:
+      JAVA_POPTS: "-Dspring.datasource.url=jdbc:postgresql://localhost:5432/postgres"
+    ports:
+      - 8080:8080
+  postgresql:
+    image: "postgres:13"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres

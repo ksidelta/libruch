@@ -2,6 +2,7 @@ package com.ksidelta.libruch.modules.example
 
 import com.ksidelta.libruch.BaseTest
 import com.ksidelta.libruch.modules.kernel.Party
+import com.ksidelta.libruch.utils.eventuallyConfigured
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.assertions.timing.eventually
 import io.kotest.matchers.shouldBe
@@ -41,7 +42,7 @@ class BookTest : BaseTest() {
         }
 
 
-        eventually {
+        eventuallyConfigured {
             query() shouldBe
                     listOf(
                         BookAvailabilityModel(
