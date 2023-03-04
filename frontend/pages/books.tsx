@@ -16,6 +16,7 @@ interface Book {
   title: string;
   author: string;
   thumbnailUrl: string;
+  unavailableReason: string | null;
 }
 
 const Books = () => {
@@ -26,6 +27,7 @@ const Books = () => {
       author: "Józef Piecyk",
       thumbnailUrl:
         "https://media.harrypotterfanzone.com/deathly-hallows-us-childrens-edition-1050x0-c-default.jpg",
+      unavailableReason: null,
     },
     {
       id: "id2",
@@ -33,6 +35,7 @@ const Books = () => {
       author: "Janina Rowling",
       thumbnailUrl:
         "https://media.harrypotterfanzone.com/deathly-hallows-us-childrens-edition-1050x0-c-default.jpg",
+      unavailableReason: "borrowed",
     },
   ];
 
@@ -45,26 +48,44 @@ const Books = () => {
       <Container>
         <h1>Moje książki</h1>
         <List>
-          {myBooks.map(({ title, id, author, thumbnailUrl }) => (
-            <ListItem
-              style={{
-                border: "1px solid",
-                borderRadius: 8,
-                marginBottom: 8,
-              }}
-              secondaryAction={
-                <IconButton edge="end" aria-label="delete">
-                  <DeleteIcon onClick={() => handleRemove(id)} />
-                </IconButton>
-              }
-              key={id}
-            >
-              <ListItemAvatar>
-                <Avatar src={thumbnailUrl} />
-              </ListItemAvatar>
-              <ListItemText primary={title} secondary={author} />
-            </ListItem>
-          ))}
+          {myBooks.map(
+            ({ title, id, author, thumbnailUrl, unavailableReason }) => {
+              const isDisabled = Boolean(unavailableReason);
+
+              return (
+                <ListItem
+                  style={{
+                    border: "1px solid",
+
+                    borderRadius: 8,
+                    marginBottom: 8,
+                  }}
+                  secondaryAction={
+                    <IconButton
+                      edge="end"
+                      aria-label="delete"
+                      disabled={isDisabled}
+                      onClick={() => handleRemove(id)}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  }
+                  key={id}
+                  className={`${isDisabled ? "Mui-disabled" : ""}`}
+                >
+                  <ListItemAvatar>
+                    <Avatar src={thumbnailUrl} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={title}
+                    secondary={`${author} ${
+                      isDisabled ? `(${unavailableReason})` : ""
+                    }`}
+                  />
+                </ListItem>
+              );
+            }
+          )}
         </List>
       </Container>
     </AuthorizedLayout>
