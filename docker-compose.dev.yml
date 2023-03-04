@@ -20,8 +20,9 @@ services:
     restart: always
     environment:
       spring.datasource.url : "jdbc:postgresql://postgresql:5432/postgres"
+      server.port: 8000
     ports:
-      - 8080:8080
+      - 8000:8000
   postgresql:
     image: "postgres:13"
     ports:

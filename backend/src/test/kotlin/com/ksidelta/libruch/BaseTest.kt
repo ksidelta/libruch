@@ -1,6 +1,5 @@
 package com.ksidelta.libruch
 
-import com.ksidelta.libruch.infra.user.MockUserProvider
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.context.annotation.Bean
@@ -44,8 +43,4 @@ open class BaseTest {
     fun stopItAfterTheSpringNotBeforeFFS(evt: ContextStoppedEvent) {
         postgres.stop()
     }
-
-    @Primary
-    @Bean
-    fun authentication() = MockUserProvider()
 }
