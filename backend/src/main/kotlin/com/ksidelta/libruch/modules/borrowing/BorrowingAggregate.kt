@@ -24,7 +24,7 @@ class BorrowingAggregate() {
 
     var copyState = CopyState.AVAILABLE
     var borrower: Party? = null
-    var deadline: Instant? = null
+    var returnDeadline: Instant? = null
 
     @CommandHandler
     constructor(command: RegisterNewBorrowing): this() {
@@ -51,7 +51,7 @@ class BorrowingAggregate() {
     fun on(evt: CopyBorrowed) {
         this.copyState = CopyState.BORROWED
         this.borrower = evt.borrower
-        this.deadline = Instant.now().plus(30, ChronoUnit.DAYS)
+        this.returnDeadline = Instant.now().plus(30, ChronoUnit.DAYS)
     }
 
     @EventSourcingHandler
