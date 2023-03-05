@@ -7,6 +7,8 @@ import org.axonframework.extensions.kotlin.applyEvent
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.TargetAggregateIdentifier
 import org.axonframework.spring.stereotype.Aggregate
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 /**
@@ -18,10 +20,14 @@ import java.util.*
 class BorrowingAggregate() {
 
     @AggregateIdentifier
-    lateinit var borrowing: UUID
+    lateinit var borrowingId: UUID
+
+    var copyState = CopyState.AVAILABLE
+    var borrower: Party? = null
+    var returnDeadline: Instant? = null
 
     @CommandHandler
-    constructor(command: RegisterNewBorrowing): this() {
+    constructor(command: RegisterNewBorrowing) : this() {
         applyEvent(RegisteredNewBorrowing(command.isbn, UUID.randomUUID()))
     }
 
@@ -40,25 +46,27 @@ class BorrowingAggregate() {
             borrower != returnCopy.borrower -> throw OnlyBorrowerMayReturnCopy()
             else -> applyEvent(CopyReturned())
         }
+
     @EventSourcingHandler
     fun on(evt: CopyBorrowed) {
         this.copyState = CopyState.BORROWED
         this.borrower = evt.borrower
+        this.returnDeadline = Instant.now().plus(30, ChronoUnit.DAYS)
     }
 
     @EventSourcingHandler
     fun on(evt: CopyReturned) {
         this.copyState = CopyState.AVAILABLE
         this.borrower = null
+        this.returnDeadline = null
     }
-    var copyState = CopyState.AVAILABLE
-    var borrower: Party? = null
+
 }
 
-data class FindBorrowings (val isbn: String)
+data class FindBorrowings(val isbn: String)
 
-data class RegisterNewBorrowing (val isbn: String)
-data class RegisteredNewBorrowing (val isbn: String, val uuid: UUID)
+data class RegisterNewBorrowing(val isbn: String)
+data class RegisteredNewBorrowing(val isbn: String, val uuid: UUID)
 
 data class BorrowCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
 data class ReturnCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
@@ -69,6 +77,7 @@ enum class CopyState {
     RESERVED,
     BORROWED,
 }
+
 class CopyAlreadyBorrowed() : Exception("Copy Already Borrowed")
 class CopyAlreadyAvailable() : Exception("Copy Already Returned")
 class OnlyBorrowerMayReturnCopy() : Exception("Copy Returned By Wrong Party")
