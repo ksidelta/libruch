@@ -1,6 +1,6 @@
 package com.ksidelta.libruch.modules.product
 
-import com.ksidelta.libruch.infra.user.UserProvider
+import com.ksidelta.libruch.modules.kernel.Party
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.messaging.responsetypes.ResponseTypes
@@ -8,21 +8,18 @@ import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import java.security.Principal
 import java.util.*
 
 @RestController
 @RequestMapping(path = ["/api/product"])
 class ProductController(
-    val userProvider: UserProvider,
     val commandGateway: CommandGateway,
     val queryGateway: QueryGateway
 ) {
 
     @PostMapping
-    suspend fun create(principal: Principal, @RequestBody body: CreateProductDTO) =
+    suspend fun create(user: Party.User, @RequestBody body: CreateProductDTO) =
         body.run {
-            val user = userProvider.getUser(principal)
             val aggregateId = commandGateway.send<UUID>(RegisterNewProduct(isbn, title, author)).await()
             CreatedProductDTO(aggregateId)
         }

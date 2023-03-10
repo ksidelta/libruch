@@ -1,7 +1,5 @@
 package com.ksidelta.libruch.modules.copy
 
-import com.ksidelta.libruch.infra.user.UserProvider
-import com.ksidelta.libruch.infra.user.withUser
 import com.ksidelta.libruch.modules.kernel.Party
 import com.ksidelta.libruch.modules.user.UserService
 import com.ksidelta.libruch.modules.user.withUser
@@ -32,7 +30,10 @@ class CopyController(
     @GetMapping
     suspend fun listAllByOrganisations(principal: Principal): CopyAvailabilityListDTO =
         userService.withUser(principal) { it.organisations }.let { organisations ->
-            queryGateway.query(QueryByOwners(owners = organisations), ResponseTypes.multipleInstancesOf(CopyAvailabilityModel::class.java)).await()
+            queryGateway.query(
+                QueryByOwners(owners = organisations),
+                ResponseTypes.multipleInstancesOf(CopyAvailabilityModel::class.java)
+            ).await()
                 .map { it.run { CopyAvailabilityDTO(id = id, isbn = isbn) } }
                 .let { CopyAvailabilityListDTO(it) }
         }
