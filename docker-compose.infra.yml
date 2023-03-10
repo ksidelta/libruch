@@ -1,0 +1,11 @@
+version: "3.4"
+
+services:
+  proxy-auth:
+    build:
+      context: ./oathkeeper
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 80:80
+

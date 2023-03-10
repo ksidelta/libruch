@@ -16,7 +16,9 @@ services:
     environment:
       PORT: 3000
   backend:
-    build: "backend"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     restart: always
     environment:
       spring.datasource.url : "jdbc:postgresql://postgresql:5432/postgres"
