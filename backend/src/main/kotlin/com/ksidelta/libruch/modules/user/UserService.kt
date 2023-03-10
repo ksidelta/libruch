@@ -1,6 +1,10 @@
 package com.ksidelta.libruch.modules.user
 
 import com.ksidelta.libruch.modules.kernel.Party
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.eventhandling.gateway.EventGateway
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Service
@@ -11,13 +15,15 @@ import javax.transaction.Transactional
 import kotlin.jvm.optionals.getOrNull
 
 @Service
-class UserService(val userModelRepository: UserModelRepository) {
+class UserService(val userModelRepository: UserModelRepository, val commandGateway: CommandGateway) {
     final val USER_PARTY = "USER_PARTY"
 
     @OptIn(ExperimentalStdlibApi::class)
     @Transactional
     fun findUser(principal: Principal): Party.User {
-        val userId = principal.userIdFromGoogle()
+
+        val userDetails = principal.userIdFromGoogle()
+        val userId = userDetails.userIdKey
 
         var userUUID = userModelRepository
             .findById(UserIdKey(userId.type, userId.userId))
@@ -26,10 +32,11 @@ class UserService(val userModelRepository: UserModelRepository) {
 
         if (userUUID == null) {
             userUUID = UUID.randomUUID()
-            userModelRepository.save(
-                UserModel(
-                    UserIdKey(userId.type, userId.userId),
-                    userUUID
+
+            commandGateway.send<Unit>(
+                CreateUser(
+                    ProviderTypeAndUserId(userId.type, userId.userId),
+                    userDetails.username
                 )
             )
         }
@@ -38,18 +45,25 @@ class UserService(val userModelRepository: UserModelRepository) {
     }
 }
 
-fun Principal?.userIdFromGoogle(): UserIdKey =
+fun Principal?.userIdFromGoogle(): UserDetails =
     when (this) {
         null -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         is OAuth2AuthenticationToken -> {
             val sub = (this.principal.attributes["sub"] as String)
-            UserIdKey("GOOGLE", sub)
+            val username = (this.principal.attributes["username"] ?: "Unnamed") as String
+            UserDetails(UserIdKey("GOOGLE", sub), username)
         }
 
         else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
     }
 
+data class UserDetails(val userIdKey: UserIdKey, val username: String)
+
 suspend fun <R> UserService.withUser(principal: Principal, func: suspend (Party.User) -> R): R =
-    this.findUser(principal)
-        .let { Party.User(it.id) }
-        .let { func(it) }
+    withContext(Dispatchers.IO) {
+        this@withUser.findUser(principal)
+            .let { Party.User(it.id) }
+            .let { func(it) }
+    }
+
+class NotYetProvisionedException : Exception("Your account is not yet provisioned, check later")
