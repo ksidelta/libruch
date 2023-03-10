@@ -13,3 +13,4 @@
 ```
 
 Frontend is available at [http://localhost:3000/](http://localhost:3000/)
+Backend is available at [http://localhost:8080/](http://localhost:8080/)

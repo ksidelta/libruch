@@ -1,6 +1,5 @@
 package com.ksidelta.libruch.modules.example
 
-import com.ksidelta.libruch.infra.user.withUser
 import com.ksidelta.libruch.modules.kernel.Party
 import com.ksidelta.libruch.modules.user.UserService
 import com.ksidelta.libruch.modules.user.withUser
