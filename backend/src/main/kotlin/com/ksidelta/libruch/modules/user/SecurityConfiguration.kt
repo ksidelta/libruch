@@ -22,6 +22,7 @@ class HelloWebfluxSecurityConfig {
         http: ServerHttpSecurity
     ): SecurityWebFilterChain? {
         http
+            .csrf { it.disable() }
             //.exceptionHandling { it.authenticationEntryPoint(RedirectServerAuthenticationEntryPoint("/auth/login")) }
             .authorizeExchange { exchanges: AuthorizeExchangeSpec ->
                 exchanges

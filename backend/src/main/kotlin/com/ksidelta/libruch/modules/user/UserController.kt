@@ -1,6 +1,7 @@
 package com.ksidelta.libruch.modules.user
 
 import com.ksidelta.libruch.modules.kernel.Party
+import org.axonframework.eventhandling.EventBus
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,11 +18,18 @@ import java.util.*
 */
 @RestController
 @RequestMapping("/auth")
-class UserController(val userService: UserService) {
+class UserController(val userService: UserService, val eventBus: EventBus) {
 
     @GetMapping(path = ["/user"])
     fun user(user: Party.User) =
         UserDTO(user.id)
+
+    fun ksi(){
+        val x =eventBus.subscribe({
+
+        })
+        x.cancel()
+    }
 }
 
 data class UserDTO(val subject: UUID)

@@ -56,6 +56,9 @@ dependencies {
 	implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.6.4'
 
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	testImplementation "org.mockito.kotlin:mockito-kotlin:4.1.0"
+
 }
 
 dependencyManagement {

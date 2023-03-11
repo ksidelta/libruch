@@ -24,26 +24,20 @@ class BookController(
 ) {
 
     @PostMapping
-    suspend fun create(principal: Principal, @RequestBody body: CreateBookDTO) =
+    suspend fun create(user: Party.User, @RequestBody body: CreateBookDTO) =
         body.run {
-            val user = userService.findUser(principal)
             val aggregateId = commandGateway.send<UUID>(RegisterNewBook(isbn, Party.User(user.id))).await()
             CreatedBookDTO(aggregateId)
         }
 
     @PostMapping(path = ["/borrow"])
-    suspend fun borrowBook(principal: Principal, @RequestBody body: BorrowBookDTO) {
-        userService.withUser(principal) { party ->
-            commandGateway.send<Any>(BorrowBook(body.id, party)).await()
-        }
+    suspend fun borrowBook(user: Party.User, @RequestBody body: BorrowBookDTO) {
+        commandGateway.send<Any>(BorrowBook(body.id, user)).await()
     }
 
     @PostMapping(path = ["/return"])
-    suspend fun returnBook(principal: Principal, @RequestBody body: ReturnBookDTO) {
-        userService.withUser(principal) { party ->
-            commandGateway.send<Any>(ReturnBook(body.id, party)).await()
-        }
-    }
+    suspend fun returnBook(user: Party.User, @RequestBody body: ReturnBookDTO) =
+        commandGateway.send<Any>(ReturnBook(body.id, user)).await()
 
     @GetMapping
     suspend fun listAll(): BookAvailabilityListDTO =
