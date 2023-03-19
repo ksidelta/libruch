@@ -2,6 +2,8 @@ package com.ksidelta.libruch.modules.organisation
 
 import org.axonframework.eventhandling.DomainEventMessage
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.gateway.EventGateway
+import org.axonframework.messaging.unitofwork.CurrentUnitOfWork
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Service
 import java.io.Serializable
@@ -11,9 +13,12 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Service
-class UserToOrganisationsEventProcessor(val repository: UserToOrganisationsModelRepository) {
+class UserToOrganisationsEventProcessor(
+    val repository: UserToOrganisationsModelRepository,
+    val eventGateway: EventGateway
+) {
 
-    @EventHandler
+    @EventHandler(payloadType = MemberAdded::class)
     fun handle(event: DomainEventMessage<MemberAdded>) {
         repository.save(
             UserToOrganisationsModel(
@@ -21,6 +26,8 @@ class UserToOrganisationsEventProcessor(val repository: UserToOrganisationsModel
                 event.payload.organisationName
             )
         )
+
+        eventGateway.publish(UserToOrganisationsModelViewUpdated())
     }
 }
 
@@ -31,10 +38,12 @@ class UserToOrganisationsModel(
     @EmbeddedId
     var id: UserAndOrganisation,
     var organisationName: String,
-)
+) {}
 
 @Embeddable
 data class UserAndOrganisation(
-    var user: UUID,
+    var userId: UUID,
     var associatedGroup: UUID
 ) : Serializable
+
+class UserToOrganisationsModelViewUpdated()
