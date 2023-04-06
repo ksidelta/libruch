@@ -5,16 +5,22 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
 
-fun Principal?.userIdFromGoogle(): UserDetails =
-    when (this) {
-        null -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
-        is OAuth2AuthenticationToken -> {
-            val sub = (this.principal.attributes["sub"] as String)
-            val username = (this.principal.attributes["username"] ?: "Unnamed") as String
-            UserDetails(UserIdKey("GOOGLE", sub), username)
+interface UserExtractor {
+    fun extract(principal: Principal): UserDetails
+}
+
+class GoogleUserExtractor : UserExtractor {
+    override fun extract(principal: Principal): UserDetails =
+        when (principal) {
+            null -> throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
+            is OAuth2AuthenticationToken -> {
+                val sub = (principal.principal.attributes["sub"] as String)
+                val username = (principal.principal.attributes["username"] ?: "Unnamed") as String
+                UserDetails(UserIdKey("GOOGLE", sub), username)
+            }
+
+            else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
         }
+}
 
-        else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
-    }
-
-data class UserDetails(val userIdKey: UserIdKey, val username: String)
+class UserDetails(val userIdKey: UserIdKey, val username: String)
