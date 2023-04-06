@@ -17,4 +17,4 @@ jobs:
     - name: List files in the repository
       working-directory: ./backend
       run: |
-         ./backend/gradlew test
+         ${{ github.workspace }}/backend/gradlew test
