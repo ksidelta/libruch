@@ -12,7 +12,7 @@ import javax.persistence.Id
 
 @Service
 class UsersForOrganisationsEventHandler(val repository: UsersForOrganisationRepository) {
-    @EventHandler
+    @EventHandler(payloadType = UserCreated::class)
     fun whenUserIsCreatedThenModelIsUpdated(created: UserCreated) {
         created.run {
             repository.save(
