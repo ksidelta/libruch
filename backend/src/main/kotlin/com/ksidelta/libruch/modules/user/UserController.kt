@@ -11,25 +11,17 @@ import java.security.Principal
 import java.util.*
 
 
-
 /*
 * Link for initiating authentication: "/oauth2/authorization/google" - info for frontend
 * Callbacks: /login/oauth2/code/google - info for backend developers
 */
 @RestController
 @RequestMapping("/auth")
-class UserController(val userService: UserService, val eventBus: EventBus) {
+class UserController(val eventBus: EventBus) {
 
     @GetMapping(path = ["/user"])
     fun user(user: Party.User) =
         UserDTO(user.id)
-
-    fun ksi(){
-        val x =eventBus.subscribe({
-
-        })
-        x.cancel()
-    }
 }
 
 data class UserDTO(val subject: UUID)

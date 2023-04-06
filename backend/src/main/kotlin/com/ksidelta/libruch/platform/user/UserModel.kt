@@ -1,5 +1,6 @@
-package com.ksidelta.libruch.modules.user
+package com.ksidelta.libruch.platform.user
 
+import com.ksidelta.libruch.modules.user.UserCreated
 import org.axonframework.eventhandling.EventHandler
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
@@ -9,12 +10,11 @@ import java.util.*
 import javax.persistence.Embeddable
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
-import javax.persistence.IdClass
 
 @Service
 class UserEventHandler(val userModelRepository: UserModelRepository) {
     @EventHandler
-    fun handleNewuser(userCreated: UserCreated) {
+    fun handleNewUser(userCreated: UserCreated) {
         userCreated.run {
             userModelRepository.save(
                 UserModel(

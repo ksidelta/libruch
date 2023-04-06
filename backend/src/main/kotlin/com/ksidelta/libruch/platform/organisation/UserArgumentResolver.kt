@@ -1,7 +1,7 @@
-package com.ksidelta.libruch.platform.user
+package com.ksidelta.libruch.platform.organisation
 
 import com.ksidelta.libruch.modules.kernel.Party
-import com.ksidelta.libruch.modules.user.UserService
+import com.ksidelta.libruch.modules.organisation.OrganisationAuthenticationService
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -14,7 +14,7 @@ import reactor.core.scheduler.Schedulers
 import java.security.Principal
 
 @Component
-class UserArgumentResolver(val userService: UserService) : HandlerMethodArgumentResolver {
+class UserArgumentResolver(val authenticationService: OrganisationAuthenticationService) : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean =
         parameter.parameterType.isAssignableFrom(Party.User::class.java)
 
@@ -27,7 +27,7 @@ class UserArgumentResolver(val userService: UserService) : HandlerMethodArgument
         exchange.getPrincipal<Principal?>()
             .publishOn(Schedulers.boundedElastic())
             .map {
-                userService.findUser(it)
+                authenticationService.findUser(it)
             }.switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED)))
                 as Mono<Any>
 }

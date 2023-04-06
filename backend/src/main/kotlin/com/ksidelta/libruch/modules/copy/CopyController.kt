@@ -1,8 +1,6 @@
 package com.ksidelta.libruch.modules.copy
 
 import com.ksidelta.libruch.modules.kernel.Party
-import com.ksidelta.libruch.modules.user.UserService
-import com.ksidelta.libruch.modules.user.withUser
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.messaging.responsetypes.ResponseTypes
@@ -14,22 +12,20 @@ import java.util.*
 @RestController
 @RequestMapping(path = ["/api/copy"])
 class CopyController(
-    val userService: UserService,
     val commandGateway: CommandGateway,
     val queryGateway: QueryGateway
 ) {
 
     @PostMapping
-    suspend fun create(@RequestBody body: CreateCopyDTO, principal: Principal) =
+    suspend fun create(@RequestBody body: CreateCopyDTO, user: Party.User) =
         body.run {
-            val user = userService.findUser(principal)
-            val aggregateId = commandGateway.send<UUID>(RegisterNewCopy(isbn, Party.User(user.id))).await()
+            val aggregateId = commandGateway.send<UUID>(RegisterNewCopy(isbn, user)).await()
             CreatedCopyDTO(aggregateId)
         }
 
     @GetMapping
-    suspend fun listAllByOrganisations(principal: Principal): CopyAvailabilityListDTO =
-        userService.withUser(principal) { it.organisations }.let { organisations ->
+    suspend fun listAllByOrganisations(principal: Principal, user: Party.User): CopyAvailabilityListDTO =
+        user.organisations.let { organisations ->
             queryGateway.query(
                 QueryByOwners(owners = organisations),
                 ResponseTypes.multipleInstancesOf(CopyAvailabilityModel::class.java)

@@ -31,7 +31,9 @@ class UserToOrganisationsEventProcessor(
     }
 }
 
-interface UserToOrganisationsModelRepository : CrudRepository<UserToOrganisationsModel, UserAndOrganisation>
+interface UserToOrganisationsModelRepository : CrudRepository<UserToOrganisationsModel, UserAndOrganisation> {
+    fun findAllByIdUserId(userId: UUID): List<UserToOrganisationsModel>
+}
 
 @Entity
 class UserToOrganisationsModel(

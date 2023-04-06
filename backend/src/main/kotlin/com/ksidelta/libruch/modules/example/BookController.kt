@@ -1,8 +1,6 @@
 package com.ksidelta.libruch.modules.example
 
 import com.ksidelta.libruch.modules.kernel.Party
-import com.ksidelta.libruch.modules.user.UserService
-import com.ksidelta.libruch.modules.user.withUser
 import kotlinx.coroutines.future.await
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.messaging.responsetypes.ResponseTypes
@@ -10,7 +8,6 @@ import org.axonframework.queryhandling.QueryGateway
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
-import java.security.Principal
 import java.util.*
 
 // TODO: Change this error handling as it makes me nuts!!!
@@ -18,7 +15,6 @@ import java.util.*
 @RestController
 @RequestMapping(path = ["/api/books"])
 class BookController(
-    val userService: UserService,
     val commandGateway: CommandGateway,
     val queryGateway: QueryGateway
 ) {
