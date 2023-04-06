@@ -1,11 +1,24 @@
 @startuml
-'https://plantuml.com/sequence-diagram
+rectangle users
 
-autonumber
 
-Alice -> Bob: Authentication Request
-Bob --> Alice: Authentication Response
+hexagon platform {
+    rectangle organisations
+}
 
-Alice -> Bob: Another authentication Request
-Alice <-- Bob: another authentication Response
+rectangle product
+rectangle copy
+rectangle borrowing
+
+users -r-> organisations :  MSG: UserCreated
+
+
+product   --> organisations : Authorization
+copy      --> organisations : Authorization
+borrowing --> organisations : Authorization
+
+product -> copy      : MSG : ProductCreated
+copy    -> borrowing : MSG : CopyCreated
+
+
 @enduml
