@@ -1,7 +1,8 @@
-package com.ksidelta.libruch.platform.user
+package com.ksidelta.libruch.modules.user
 
-import com.ksidelta.libruch.modules.user.UserCreated
+import org.axonframework.eventhandling.DomainEventMessage
 import org.axonframework.eventhandling.EventHandler
+import org.axonframework.eventhandling.gateway.EventGateway
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
@@ -12,10 +13,10 @@ import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Service
-class UserEventHandler(val userModelRepository: UserModelRepository) {
-    @EventHandler
-    fun handleNewUser(userCreated: UserCreated) {
-        userCreated.run {
+class UserEventHandler(val userModelRepository: UserModelRepository, val eventGateway: EventGateway) {
+    @EventHandler(payloadType = UserCreated::class)
+    fun on(userCreated: DomainEventMessage<UserCreated>) {
+        userCreated.payload.run {
             userModelRepository.save(
                 UserModel(
                     UserIdKey(id.type, id.userId),
@@ -24,6 +25,8 @@ class UserEventHandler(val userModelRepository: UserModelRepository) {
                 )
             )
         }
+
+        eventGateway.publish(UserReadModelUpdated())
     }
 }
 
@@ -44,5 +47,7 @@ data class UserIdKey(
     var type: String,
     var userId: String,
 ) : Serializable
+
+class UserReadModelUpdated() {}
 
 

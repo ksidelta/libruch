@@ -2,6 +2,8 @@ package com.ksidelta.libruch.platform.organisation
 
 import com.ksidelta.libruch.modules.kernel.Party
 import com.ksidelta.libruch.modules.organisation.OrganisationAuthenticationService
+import kotlinx.coroutines.reactor.awaitSingle
+import kotlinx.coroutines.runBlocking
 import org.springframework.core.MethodParameter
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -14,7 +16,8 @@ import reactor.core.scheduler.Schedulers
 import java.security.Principal
 
 @Component
-class UserArgumentResolver(val authenticationService: OrganisationAuthenticationService) : HandlerMethodArgumentResolver {
+class UserArgumentResolver(val authenticationService: OrganisationAuthenticationService) :
+    HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean =
         parameter.parameterType.isAssignableFrom(Party.User::class.java)
 
@@ -23,11 +26,16 @@ class UserArgumentResolver(val authenticationService: OrganisationAuthentication
         parameter: MethodParameter,
         bindingContext: BindingContext,
         exchange: ServerWebExchange
-    ): Mono<Any> =
-        exchange.getPrincipal<Principal?>()
+    ): Mono<Any> {
+        return exchange.getPrincipal<Principal>()
+            .switchIfEmpty(Mono.just<Principal?>(EmptyPrincipal()))
             .publishOn(Schedulers.boundedElastic())
             .map {
                 authenticationService.findUser(it)
-            }.switchIfEmpty(Mono.error(ResponseStatusException(HttpStatus.UNAUTHORIZED)))
-                as Mono<Any>
+            }
+    }
+}
+
+class EmptyPrincipal : Principal {
+    override fun getName(): String = "Anonymous"
 }

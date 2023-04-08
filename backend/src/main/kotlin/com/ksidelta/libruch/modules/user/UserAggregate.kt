@@ -1,9 +1,10 @@
 package com.ksidelta.libruch.modules.user
 
 import org.axonframework.commandhandling.CommandHandler
-import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.extensions.kotlin.applyEvent
+import org.axonframework.messaging.unitofwork.CurrentUnitOfWork
+import org.axonframework.messaging.unitofwork.UnitOfWork
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.spring.stereotype.Aggregate
 import java.io.Serializable
@@ -16,7 +17,10 @@ class UserAggregate() {
 
     @CommandHandler
     constructor(createUser: CreateUser) : this() {
-        createUser.run { applyEvent(UserCreated(id, username, assignedGlobalId)) }
+
+        createUser.run {
+            applyEvent(UserCreated(id, username, assignedGlobalId))
+        }
     }
 
     @EventSourcingHandler

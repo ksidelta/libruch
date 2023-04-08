@@ -1,7 +1,9 @@
 package com.ksidelta.libruch.platform.user
 
+import com.ksidelta.libruch.modules.user.UserIdKey
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
+import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
 
@@ -9,6 +11,7 @@ interface UserExtractor {
     fun extract(principal: Principal): UserDetails
 }
 
+@Service
 class GoogleUserExtractor : UserExtractor {
     override fun extract(principal: Principal): UserDetails =
         when (principal) {

@@ -1,10 +1,10 @@
 package com.ksidelta.libruch.modules.organisation
 
 import com.ksidelta.libruch.modules.kernel.Party
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.future.await
-import kotlinx.coroutines.withTimeout
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventBus
 import org.axonframework.messaging.MetaData
@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import java.util.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 import kotlin.reflect.KClass
 
 @RestController
@@ -35,15 +37,15 @@ class OrganisationController(val commandGateway: CommandGateway, val eventBus: E
 }
 
 suspend fun EventBus.awaitingEvent(eventType: KClass<*>, block: suspend (correlationId: String) -> Unit) {
-    withTimeout(10000) {
-        val correlationId = UUID.randomUUID().toString()
+    val correlationId = UUID.randomUUID().toString()
 
+    withTimeout(10000) {
         val flow =
-            callbackFlow {
+            callbackFlow<Any> {
                 val x = this
                 val subscription = this@awaitingEvent.subscribe { events ->
                     events.forEach {
-                        if (it.payload.javaClass == eventType.java && it.metaData["traceId"] == correlationId) {
+                        if (it.payload.javaClass == eventType.java && it.metaData["traceId"] == correlationId ) {
                             x.trySend(Unit)
                             x.close()
                         } else {

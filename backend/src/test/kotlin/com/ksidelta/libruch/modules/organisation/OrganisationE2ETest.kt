@@ -14,9 +14,9 @@ class OrganisationE2ETest : BaseTest() {
 
     @Test
     fun whenOrganisationCreatedThenSucceeds() {
-        createBook("Hackespace Pomorze").assertOK()
+        createOrganisation("Hackespace Pomorze").assertOK()
     }
 
-    fun createBook(name: String) =
+    fun createOrganisation(name: String) =
         testRestTemplate.postForEntity("/api/organisation", CreateOrganisationDTO(name), Unit::class.java)
 }
