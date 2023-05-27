@@ -23,13 +23,6 @@ class UserController(val userService: UserService, val eventBus: EventBus) {
     @GetMapping(path = ["/user"])
     fun user(user: Party.User) =
         UserDTO(user.id)
-
-    fun ksi(){
-        val x =eventBus.subscribe({
-
-        })
-        x.cancel()
-    }
 }
 
 data class UserDTO(val subject: UUID)
