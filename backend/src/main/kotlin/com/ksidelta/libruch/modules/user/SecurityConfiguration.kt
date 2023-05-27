@@ -26,6 +26,7 @@ class HelloWebfluxSecurityConfig {
             //.exceptionHandling { it.authenticationEntryPoint(RedirectServerAuthenticationEntryPoint("/auth/login")) }
             .authorizeExchange { exchanges: AuthorizeExchangeSpec ->
                 exchanges
+                    .pathMatchers("/auth/login").authenticated()
                     .anyExchange().permitAll()
             }
             .oauth2Login()
