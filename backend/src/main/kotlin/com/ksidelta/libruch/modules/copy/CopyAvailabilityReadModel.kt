@@ -19,8 +19,10 @@ class CopyEventProcessor(val copyReadModelRepository: CopyReadModelRepository) {
         copyReadModelRepository.save(
             CopyAvailabilityModel(
                 id = event.copyId,
-                isbn = event.isbn,
+                isbn = event.copy.isbn,
+                title = event.copy.title,
                 owner = event.owner.partyId,
+                organisation = event.organisation.partyId,
             )
         )
 }
@@ -29,6 +31,8 @@ class CopyEventProcessor(val copyReadModelRepository: CopyReadModelRepository) {
 interface CopyReadModelRepository : CrudRepository<CopyAvailabilityModel, UUID> {
     fun findAllByOwner(owner: Party): Iterable<CopyAvailabilityModel>
     fun findAllByOwnerIn(owner: Collection<Party>): Iterable<CopyAvailabilityModel>
+    fun findByIsbn(isbn: String): Optional<CopyAvailabilityModel>
+    fun findAllByOrganisationAndTitleContains(organisation: UUID, titleFragment: String): Iterable<CopyAvailabilityModel>
 }
 
 @Entity(name = "copy_availability_model")
@@ -36,7 +40,9 @@ data class CopyAvailabilityModel(
     @Id
     val id: UUID,
     val isbn: String,
+    val title: String,
     val owner: UUID,
+    val organisation: UUID,
 )
 
 
