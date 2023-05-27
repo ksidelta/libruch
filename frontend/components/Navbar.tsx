@@ -36,7 +36,7 @@ const Navbar = () => {
             <Link href="/books">Przeglądaj książki</Link>
           </Button>
           <Button color="inherit">
-            <Link href="/borrowings">Przeglądaj organizacje</Link>
+            <Link href="/organisations">Przeglądaj organizacje</Link>
           </Button>
           {auth && (
             <div>
