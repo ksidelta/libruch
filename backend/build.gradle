@@ -47,6 +47,9 @@ dependencies {
 	testImplementation 'org.axonframework:axon-test'
 	testImplementation 'org.testcontainers:junit-jupiter'
 
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+	implementation 'org.springdoc:springdoc-openapi-webflux-ui:1.7.0'
+
 
 	testImplementation "org.testcontainers:postgresql:1.17.6"
 	testImplementation("org.hamcrest:hamcrest:2.2")
