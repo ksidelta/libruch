@@ -31,4 +31,27 @@ class CopyControllerTest : BaseTest() {
         assertNotNull(result.body)
     }
 
+    @Test
+    fun `should return list of books after given title fragment`() {
+        val organisationId = UUID.randomUUID()
+        val isbn1 = "9788383223445"     // Czysty kod
+        val isbn2 = "9788328364622"     // Czysty kod w Pythonie
+        val isbn3 = "9781617297571"     // Spring in Action, Sixth Edition
+
+        testRestTemplate.postForEntity(URI, CreateCopyDTO(isbn1, organisationId), String::class.java)
+        testRestTemplate.postForEntity(URI, CreateCopyDTO(isbn2, organisationId), String::class.java)
+        testRestTemplate.postForEntity(URI, CreateCopyDTO(isbn3, organisationId), String::class.java)
+
+        val fragment = "Czysty"
+        val request = GetCopyDTO(organisationId =organisationId, titleFragment = fragment)
+
+
+        val result = testRestTemplate.postForEntity(URI.plus("/by-organisation"), request, CopyAvailabilityListDTO::class.java)
+
+
+        assertNotNull(result.body)
+        val copies = result.body!!.copies
+        assertEquals(2, copies.size)
+        assertTrue(copies.all { it.title.contains(fragment) })
+    }
 }
