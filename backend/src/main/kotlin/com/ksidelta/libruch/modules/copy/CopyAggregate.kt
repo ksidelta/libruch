@@ -6,8 +6,6 @@ import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
 import org.axonframework.extensions.kotlin.applyEvent
 import org.axonframework.modelling.command.AggregateIdentifier
-import org.axonframework.modelling.command.AggregateLifecycle.apply
-import org.axonframework.modelling.command.TargetAggregateIdentifier
 import org.axonframework.spring.stereotype.Aggregate
 import java.util.*
 
