@@ -18,4 +18,17 @@ class CopyControllerTest : BaseTest() {
         private const val URI = "/api/copy"
     }
 
+    @Test
+    fun `should return UUID after create copy`() {
+        val isbn = "9788383223445"
+        val organisationId = UUID.randomUUID()
+
+
+        val result = testRestTemplate.postForEntity(URI, CreateCopyDTO(isbn, organisationId), CreatedCopyDTO::class.java)
+        println(result)
+
+
+        assertNotNull(result.body)
+    }
+
 }
