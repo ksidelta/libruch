@@ -20,8 +20,9 @@ class CopyAggregate() {
         applyEvent(
             NewCopyRegistered(
                 copyId = UUID.randomUUID(),
-                isbn = isbn,
-                owner = owner,
+                copy = command.copy,
+                owner = command.owner,
+                organisation = command.organisation,
             )
         )
     }
@@ -33,7 +34,12 @@ class CopyAggregate() {
 }
 
 
-data class RegisterNewCopy(val isbn: String, val owner: Party)
+data class RegisterNewCopy(val copy: BookDetails, val owner: Party.User, val organisation: Party.Organisation)
 
 
-data class NewCopyRegistered(val copyId: UUID, val isbn: String, val owner: Party))
+data class NewCopyRegistered(
+    val copyId: UUID,
+    val copy: BookDetails,
+    val owner: Party,
+    val organisation: Party.Organisation
+)
