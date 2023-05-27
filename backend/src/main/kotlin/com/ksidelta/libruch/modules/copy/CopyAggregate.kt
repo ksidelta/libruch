@@ -4,6 +4,7 @@ package com.ksidelta.libruch.modules.copy
 import com.ksidelta.libruch.modules.kernel.Party
 import org.axonframework.commandhandling.CommandHandler
 import org.axonframework.eventsourcing.EventSourcingHandler
+import org.axonframework.extensions.kotlin.applyEvent
 import org.axonframework.modelling.command.AggregateIdentifier
 import org.axonframework.modelling.command.AggregateLifecycle.apply
 import org.axonframework.modelling.command.TargetAggregateIdentifier
@@ -18,13 +19,13 @@ class CopyAggregate() {
 
     @CommandHandler
     constructor(command: RegisterNewCopy) : this() {
-        apply(command.run {
+        applyEvent(
             NewCopyRegistered(
                 copyId = UUID.randomUUID(),
                 isbn = isbn,
                 owner = owner,
             )
-        })
+        )
     }
 
     @EventSourcingHandler
@@ -37,4 +38,4 @@ class CopyAggregate() {
 data class RegisterNewCopy(val isbn: String, val owner: Party)
 
 
-data class NewCopyRegistered(val copyId: UUID, val isbn: String, val owner: Party)
+data class NewCopyRegistered(val copyId: UUID, val isbn: String, val owner: Party))
