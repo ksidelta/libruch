@@ -1,26 +1,26 @@
 package com.ksidelta.libruch.modules.user
 
-import com.ksidelta.libruch.modules.kernel.Party
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.axonframework.commandhandling.gateway.CommandGateway
-import org.axonframework.eventhandling.gateway.EventGateway
 import org.springframework.http.HttpStatus
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
 import java.security.Principal
 import java.util.*
-import javax.transaction.Transactional
 import kotlin.jvm.optionals.getOrNull
 
+interface UserService {
+    fun logUser(principal: Principal): UUID
+}
+
 @Service
-class UserService(val userModelRepository: UserModelRepository, val commandGateway: CommandGateway) {
-    final val USER_PARTY = "USER_PARTY"
+class UserServiceImpl(
+    val userModelRepository: UserModelRepository,
+    val commandGateway: CommandGateway
+) : UserService {
 
     @OptIn(ExperimentalStdlibApi::class)
-    @Transactional
-    fun findUser(principal: Principal): Party.User {
+    override fun logUser(principal: Principal): UUID {
 
         val userDetails = principal.userIdFromGoogle()
         val userId = userDetails.userIdKey
@@ -41,7 +41,7 @@ class UserService(val userModelRepository: UserModelRepository, val commandGatew
             )
         }
 
-        return Party.User(userUUID!!)
+        return userUUID!!
     }
 }
 
@@ -53,17 +53,14 @@ fun Principal?.userIdFromGoogle(): UserDetails =
             val username = (this.principal.attributes["username"] ?: "Unnamed") as String
             UserDetails(UserIdKey("GOOGLE", sub), username)
         }
+        is SimpleAuthentication ->{
+            UserDetails(
+                UserIdKey("TEST", (this.principal as SimpleAuthentication.TestPrincipal).id.toString()),
+                "ZIOMEK"
+            )
+        }
 
         else -> throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Authorization is unknown")
     }
 
 data class UserDetails(val userIdKey: UserIdKey, val username: String)
-
-suspend fun <R> UserService.withUser(principal: Principal, func: suspend (Party.User) -> R): R =
-    withContext(Dispatchers.IO) {
-        this@withUser.findUser(principal)
-            .let { Party.User(it.id) }
-            .let { func(it) }
-    }
-
-class NotYetProvisionedException : Exception("Your account is not yet provisioned, check later")

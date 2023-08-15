@@ -8,6 +8,10 @@ import kotlinx.coroutines.withTimeout
 import org.axonframework.commandhandling.gateway.CommandGateway
 import org.axonframework.eventhandling.EventBus
 import org.axonframework.messaging.MetaData
+import org.axonframework.messaging.responsetypes.ResponseType
+import org.axonframework.messaging.responsetypes.ResponseTypes
+import org.axonframework.queryhandling.QueryGateway
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,7 +21,11 @@ import kotlin.reflect.KClass
 
 @RestController
 @RequestMapping("/api/organisation")
-class OrganisationController(val commandGateway: CommandGateway, val eventBus: EventBus) {
+class OrganisationController(
+    val commandGateway: CommandGateway,
+    val eventBus: EventBus,
+    val queryGateway: QueryGateway
+) {
 
     @PostMapping
     suspend fun create(user: Party.User, @RequestBody createOrganisationDTO: CreateOrganisationDTO) {
@@ -29,9 +37,16 @@ class OrganisationController(val commandGateway: CommandGateway, val eventBus: E
                 )
             }.await()
         }
-
-
     }
+
+    @GetMapping(path = ["/mine"])
+    suspend fun listUserOrganisations(user: Party.User): UserOrganisationViewModel =
+        queryGateway.query(
+            QueryUserOrganisations(user),
+            ResponseTypes.multipleInstancesOf(UserOrganisationsView::class.java)
+        )
+            .await()
+            .let { UserOrganisationViewModel(it) }
 }
 
 suspend fun EventBus.awaitingEvent(eventType: KClass<*>, block: suspend (correlationId: String) -> Unit) {
@@ -65,3 +80,4 @@ suspend fun EventBus.awaitingEvent(eventType: KClass<*>, block: suspend (correla
 
 
 data class CreateOrganisationDTO(val name: String)
+data class UserOrganisationViewModel(val organisations: List<UserOrganisationsView>)

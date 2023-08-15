@@ -36,6 +36,7 @@ class BooksE2ETest : BaseTest() {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     fun given2BooksWhenListedThenBothPresent() {
         val book1 = createBook(bookIsbn).body!!.id
+        Thread.sleep(1000) // Users are created at the same time, jeez I knew it would happen, fuck eventual consistency
         val book2 = createBook(bookIsbn).body!!.id
 
         listBooks().assertBodyThat(
