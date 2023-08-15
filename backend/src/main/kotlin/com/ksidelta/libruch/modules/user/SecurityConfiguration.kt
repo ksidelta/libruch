@@ -34,7 +34,6 @@ class HelloWebfluxSecurityConfig {
     ): SecurityWebFilterChain? {
         return http
             .csrf { it.disable() }
-            .addFilterAt(TestHeaderAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
             .authorizeExchange { exchanges: AuthorizeExchangeSpec ->
                 exchanges
                     .pathMatchers("/auth/login").authenticated()

@@ -1,6 +1,7 @@
 package com.ksidelta.libruch
 
 import com.ksidelta.libruch.modules.kernel.Party
+import com.ksidelta.libruch.modules.user.TestHeaderAuthenticationFilter
 import com.ksidelta.libruch.modules.user.UserService
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -19,6 +20,8 @@ import org.springframework.core.annotation.Order
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.ReactiveAuthenticationManager
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder
+import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.server.authentication.AuthenticationWebFilter
 import org.springframework.stereotype.Component
@@ -82,5 +85,12 @@ class TestAuthenticationConfiguration() {
     fun restTemplateBuilder(@Qualifier("defaultUserId") defaultUserId: UUID): RestTemplateBuilder =
         RestTemplateBuilder().defaultHeader("X-USER-ID", defaultUserId.toString())
 
+    @Bean
+    @Order(value = Ordered.HIGHEST_PRECEDENCE)
+    fun testFilterChain(http: ServerHttpSecurity) =
+        http
+            .csrf { it.disable() }
+            .addFilterAt(TestHeaderAuthenticationFilter(), SecurityWebFiltersOrder.AUTHENTICATION)
+            .build()
 
 }

@@ -45,6 +45,4 @@ class OrganisationE2ETest : BaseTest() {
                 .build(),
             UserOrganisationViewModel::class.java
         )
-
-
 }
