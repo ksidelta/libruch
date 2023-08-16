@@ -17,7 +17,6 @@ class AuthenticationService(
 ) {
     final val USER_PARTY = "USER_PARTY"
 
-    @Transactional
     fun findUser(principal: Principal): Party.User {
         val userUUID = userService.logUser(principal)
 
