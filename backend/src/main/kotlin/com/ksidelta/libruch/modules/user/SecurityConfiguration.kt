@@ -3,15 +3,20 @@ package com.ksidelta.libruch.modules.user
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder
 import org.springframework.security.config.web.server.ServerHttpSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity.AuthorizeExchangeSpec
-import org.springframework.security.core.AuthenticatedPrincipal
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.context.ReactiveSecurityContextHolder
 import org.springframework.security.core.context.SecurityContextImpl
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository
+import org.springframework.security.oauth2.client.registration.ReactiveClientRegistrationRepository
+import org.springframework.security.oauth2.client.web.server.DefaultServerOAuth2AuthorizationRequestResolver
+import org.springframework.security.oauth2.client.web.server.ServerOAuth2AuthorizationRequestResolver
 import org.springframework.security.web.server.SecurityWebFilterChain
+import org.springframework.security.web.server.authentication.RedirectServerAuthenticationEntryPoint
+import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher
+import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher
 import org.springframework.web.server.ServerWebExchange
 import org.springframework.web.server.WebFilter
 import org.springframework.web.server.WebFilterChain
@@ -21,8 +26,8 @@ import java.util.*
 
 
 /*
-* Link for initiating authentication: "/oauth2/authorization/google"}
-* Callbacks: /login/oauth2/code/google.
+* Link for initiating authentication: "/auth/login/oauth2/{registrationId}"}
+* RedirectURI: /auth/login/oauth2/callback/{registrationId}.
 */
 
 @Configuration
@@ -30,7 +35,8 @@ import java.util.*
 class HelloWebfluxSecurityConfig {
     @Bean
     fun springSecurityFilterChain(
-        http: ServerHttpSecurity
+        http: ServerHttpSecurity,
+        authorizationRequestResolver: ServerOAuth2AuthorizationRequestResolver
     ): SecurityWebFilterChain? {
         return http
             .csrf { it.disable() }
@@ -39,9 +45,23 @@ class HelloWebfluxSecurityConfig {
                     .pathMatchers("/auth/login").authenticated()
                     .anyExchange().permitAll()
             }
-            .oauth2Login()
-            .and()
+            .oauth2Login {
+                it.authorizationRequestResolver(authorizationRequestResolver)
+                it.authenticationMatcher(PathPatternParserServerWebExchangeMatcher("/auth/login/oauth2/callback/{registrationId}"))
+            }
+            .exceptionHandling { it.authenticationEntryPoint(RedirectServerAuthenticationEntryPoint("/auth/login/oauth2/google")) }
             .build()
+    }
+
+    @Bean
+    fun authorizationRequestResolver(clientRegistrationRepository: ReactiveClientRegistrationRepository): DefaultServerOAuth2AuthorizationRequestResolver {
+        val authorizationRequestMatcher: ServerWebExchangeMatcher = PathPatternParserServerWebExchangeMatcher(
+            "/auth/login/oauth2/{registrationId}"
+        )
+
+        return DefaultServerOAuth2AuthorizationRequestResolver(
+            clientRegistrationRepository, authorizationRequestMatcher
+        )
     }
 
 

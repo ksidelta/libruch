@@ -1,0 +1,20 @@
+http:
+  routers:
+    auth:
+      rule: "PathPrefix(`/auth`) || PathPrefix(`/login`) "
+      service: backend
+    api:
+      rule: "PathPrefix(`/api`)"
+      service: backend
+    frontend:
+      rule: "!(PathPrefix(`/auth`) || PathPrefix(`/api`))"
+      service: frontend
+  services:
+    frontend:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:3000"
+    backend:
+      loadBalancer:
+        servers:
+          - url: "http://backend:8000"

@@ -1,8 +1,14 @@
 version: "3.4"
 
 services:
+  proxy:
+    image: "traefik:2.10.4"
+    ports: 
+      - 80:80
+      - 2137:8080
+    volumes:
+      - ./proxy/:/etc/traefik/
   frontend:
-    # image: frontend
     restart: on-failure
     build:
       context: ./frontend
@@ -34,3 +40,4 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+

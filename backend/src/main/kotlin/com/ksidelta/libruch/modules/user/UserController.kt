@@ -32,7 +32,7 @@ class UserController(val authenticationService: AuthenticationService, val event
     fun loginWithRedirect(
         @RequestHeader(
             "Referer",
-            defaultValue = "http://localhost:3000"
+            defaultValue = "http://localhost"
         ) referer: String
     ): ResponseEntity<Void> =
         ResponseEntity
