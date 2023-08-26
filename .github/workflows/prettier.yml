@@ -1,13 +1,14 @@
 name: Frontend CI - prettier
 
-on: [push]
+
+on:
+  push:
+    paths:
+      - frontend/**
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-    paths: 
-      - frontend/**
 
     steps:
     - name: Checkout Repository

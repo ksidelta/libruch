@@ -1,13 +1,14 @@
 name: Java CI with Gradle
 
-on: [push]
+on:
+  push:
+    paths:
+      - backend/**
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
-    paths: 
-      - backend/**
 
     steps:
     - uses: actions/checkout@v3
