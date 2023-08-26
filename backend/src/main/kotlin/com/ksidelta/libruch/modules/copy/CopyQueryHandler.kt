@@ -18,8 +18,17 @@ class CopyQueryHandler(val copyReadModelRepository: CopyReadModelRepository) {
     fun query(queryByOwners: QueryByOwners) =
         copyReadModelRepository.findAllByOwnerIn(owner = queryByOwners.owners).toList()
 
+    @QueryHandler
+    fun query(queryByName: QueryByNameAndOrganisations) =
+        copyReadModelRepository.findByNameAndOrganisationIn(name = queryByName.name, organisations = queryByName.organisations)
 }
 
 class QueryAllCopies() {}
 class QueryByOwner(val owner: Party) {}
 class QueryByOwners(val owners: Collection<Party>) {}
+
+class QueryByNameAndOrganisations(
+    val name: String,
+    val user: Party.User,
+    val organisations: Collection<Party.Organisation>
+)
