@@ -1,7 +1,7 @@
 http:
   routers:
     auth:
-      rule: "PathPrefix(`/auth`) || PathPrefix(`/login`) "
+      rule: "PathPrefix(`/auth`)"
       service: backend
     api:
       rule: "PathPrefix(`/api`)"
