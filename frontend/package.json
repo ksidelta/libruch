@@ -4,7 +4,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "prettier": "prettier --write ./*.{js,ts,tsx,jsx}"
+    "prettier": "prettier --write ./*.{js,ts,tsx,jsx}",
+    "prettier:check": "prettier --check ./*.{js,ts,tsx,jsx}"
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
