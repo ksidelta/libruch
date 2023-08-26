@@ -19,10 +19,12 @@ class BorrowingAggregate() {
 
     @AggregateIdentifier
     lateinit var borrowing: UUID
+    var copyState = CopyState.AVAILABLE
+    var borrower: Party? = null
 
     @CommandHandler
     constructor(command: RegisterNewBorrowing): this() {
-        applyEvent(RegisteredNewBorrowing(command.isbn, UUID.randomUUID()))
+        applyEvent(RegisteredNewBorrowing(command.isbn, UUID.randomUUID(), command.userId))
     }
 
     @CommandHandler
@@ -51,14 +53,18 @@ class BorrowingAggregate() {
         this.copyState = CopyState.AVAILABLE
         this.borrower = null
     }
-    var copyState = CopyState.AVAILABLE
-    var borrower: Party? = null
+
+    @EventSourcingHandler
+    fun on(evt: RegisteredNewBorrowing) {
+        this.borrowing = evt.uuid
+    }
+
 }
 
 data class FindBorrowings (val isbn: String)
 
-data class RegisterNewBorrowing (val isbn: String)
-data class RegisteredNewBorrowing (val isbn: String, val uuid: UUID)
+data class RegisterNewBorrowing (val isbn: String, val userId: UUID)
+data class RegisteredNewBorrowing (val isbn: String, val uuid: UUID, val userId: UUID)
 
 data class BorrowCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
 data class ReturnCopy(@TargetAggregateIdentifier val copyId: UUID, val borrower: Party)
