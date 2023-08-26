@@ -1,6 +1,5 @@
 name: Frontend CI - prettier
 
-
 on:
   push:
     paths:
