@@ -8,6 +8,7 @@ import { createContext, useMemo, useState } from "react";
 
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { AuthProvider } from "../features/auth/AuthProvider";
 
 export const ColorModeContext = createContext({ toggleColorMode: () => {} });
 
@@ -39,7 +40,9 @@ export default function LibruchApp({ Component, pageProps }) {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
-        <Component {...pageProps} />
+        <AuthProvider>
+          <Component {...pageProps} />
+        </AuthProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
   );
