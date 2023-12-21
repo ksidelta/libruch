@@ -55,7 +55,8 @@ open class BaseTest {
         }
 
         @JvmStatic
-        @DynamicPropertySource
+        @DynamicPropertySourcElo, jestem debilem i potrzebuję pomocy. Mam fedorę 38 zainstalowaną na btrfs z bootowaniem efi. Chciałem użyć timeshif do backupu systemu, ale ten wymaga żeby główny subvolume miał nazwę "@" . odpaliłem ubuntu live cd, zmieniłem nazwę subvolume na "@" i wyedytowałem pliki w grub oraz na partycji efi żeby zmienić odwołania do subcolume na nowe nazwy. Nie zadziałało. Odpaliłem grub rescue i kazałem mu naprawić gruba bez reinstalacji samego gruba - nic to nie dało. Więc zainstalowałem na drugiej partycji drugą fedorę z nadzieją że ta zainstaluje nowego gruba i wykryje starą fedorę ale tak się nie stało i do tego chyba nadpisała mi partycję efi.
+e
         fun realDataSourceURL(registry: DynamicPropertyRegistry) {
             registry.add("spring.datasource.url") { "jdbc:postgresql://localhost:${postgres.firstMappedPort}/postgres" }
         }

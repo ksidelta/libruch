@@ -5,6 +5,7 @@ import org.axonframework.eventhandling.DomainEventMessage
 import org.axonframework.eventhandling.EventHandler
 import org.axonframework.eventhandling.gateway.EventGateway
 import org.axonframework.queryhandling.QueryHandler
+import org.axonframework.queryhandling.QueryUpdateEmitter
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Service
 import java.io.Serializable
@@ -16,19 +17,25 @@ import javax.persistence.Entity
 @Service
 class UserToOrganisationsEventProcessor(
     val repository: UserToOrganisationsModelRepository,
-    val eventGateway: EventGateway
+    val eventGateway: EventGateway,
+    val queryUpdateEmitter: QueryUpdateEmitter
 ) {
 
     @EventHandler(payloadType = MemberAdded::class)
     fun handle(event: DomainEventMessage<MemberAdded>) {
-        repository.save(
+        val userId = event.payload.user.id;
+        val update =
             UserToOrganisationsModel(
                 UserAndOrganisation(event.payload.user.id, UUID.fromString(event.aggregateIdentifier)),
                 event.payload.organisationName
             )
+
+        repository.save(
+            update
         )
 
-        eventGateway.publish(UserToOrganisationsModelViewUpdated())
+
+        queryUpdateEmitter.emit(QueryUserOrganisations::class.java, { query -> query.user.id == userId }, update)
     }
 
     @QueryHandler

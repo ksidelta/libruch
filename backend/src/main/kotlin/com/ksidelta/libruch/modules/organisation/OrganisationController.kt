@@ -11,11 +11,14 @@ import org.axonframework.messaging.MetaData
 import org.axonframework.messaging.responsetypes.ResponseType
 import org.axonframework.messaging.responsetypes.ResponseTypes
 import org.axonframework.queryhandling.QueryGateway
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
+import java.time.Duration
 import java.util.*
 import kotlin.reflect.KClass
 
@@ -47,6 +50,15 @@ class OrganisationController(
         )
             .await()
             .let { UserOrganisationViewModel(it) }
+
+    @GetMapping(path = ["/stream"], produces = [MediaType.TEXT_EVENT_STREAM_VALUE])
+    fun testServerSentEvents(user: Party.User): Flux<UserOrganisationViewModel> {
+        return Flux.interval(Duration.ofMillis(1000))
+            .map { UserOrganisationViewModel(listOf(
+                UserOrganisationsView(UUID.randomUUID(), "xD"),
+                UserOrganisationsView(UUID.randomUUID(), "xD2"),
+            )) }
+    }
 }
 
 suspend fun EventBus.awaitingEvent(eventType: KClass<*>, block: suspend (correlationId: String) -> Unit) {
