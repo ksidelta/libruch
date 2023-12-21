@@ -6,12 +6,18 @@ import com.ksidelta.libruch.modules.user.UserService
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.context.ApplicationContext
+import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Import
 import org.springframework.context.annotation.Primary
+import org.springframework.context.annotation.Scope
 import org.springframework.context.event.ContextStoppedEvent
 import org.springframework.context.event.EventListener
 import org.springframework.core.MethodParameter
@@ -28,7 +34,9 @@ import org.springframework.stereotype.Component
 import org.springframework.stereotype.Service
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.test.web.reactive.server.WebTestClient
 import org.springframework.web.reactive.BindingContext
+import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.result.method.HandlerMethodArgumentResolver
 import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.server.ServerWebExchange
@@ -55,8 +63,7 @@ open class BaseTest {
         }
 
         @JvmStatic
-        @DynamicPropertySourcElo, jestem debilem i potrzebuję pomocy. Mam fedorę 38 zainstalowaną na btrfs z bootowaniem efi. Chciałem użyć timeshif do backupu systemu, ale ten wymaga żeby główny subvolume miał nazwę "@" . odpaliłem ubuntu live cd, zmieniłem nazwę subvolume na "@" i wyedytowałem pliki w grub oraz na partycji efi żeby zmienić odwołania do subcolume na nowe nazwy. Nie zadziałało. Odpaliłem grub rescue i kazałem mu naprawić gruba bez reinstalacji samego gruba - nic to nie dało. Więc zainstalowałem na drugiej partycji drugą fedorę z nadzieją że ta zainstaluje nowego gruba i wykryje starą fedorę ale tak się nie stało i do tego chyba nadpisała mi partycję efi.
-e
+        @DynamicPropertySource
         fun realDataSourceURL(registry: DynamicPropertyRegistry) {
             registry.add("spring.datasource.url") { "jdbc:postgresql://localhost:${postgres.firstMappedPort}/postgres" }
         }
@@ -80,11 +87,40 @@ class TestAuthenticationConfiguration() {
 
     @Bean
     @Qualifier("defaultUserId")
+    @Scope
     fun defaultUserId() = UUID.randomUUID()
 
     @Bean
     fun restTemplateBuilder(@Qualifier("defaultUserId") defaultUserId: UUID): RestTemplateBuilder =
         RestTemplateBuilder().defaultHeader("X-USER-ID", defaultUserId.toString())
+
+    @Bean
+    @Primary
+    fun webTestClient(
+        @Qualifier("defaultUserId") defaultUserId: UUID,
+        applicationContext: ApplicationContext
+    ): WebTestClient {
+        return WebTestClient
+            .bindToServer()
+            .baseUrl("http://localhost:8080")
+            .defaultHeader("X-USER-ID", defaultUserId.toString())
+            .build();
+    }
+
+
+    @Bean
+    @Primary
+    fun webClient(
+        @Qualifier("defaultUserId") defaultUserId: UUID,
+        applicationContext: ApplicationContext
+    ): WebClient {
+        return WebClient
+            .builder()
+            .baseUrl("http://localhost:8080")
+            .defaultHeader("X-USER-ID", defaultUserId.toString())
+            .build();
+    }
+
 
     @Bean
     @Order(value = Ordered.HIGHEST_PRECEDENCE)

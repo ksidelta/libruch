@@ -38,6 +38,9 @@ dependencies {
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}")
 	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:${coroutinesVersion}")
 
+	testImplementation "io.projectreactor:reactor-test"
+
+
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'org.axonframework:axon-spring-boot-starter'
 	implementation 'org.axonframework.extensions.kotlin:axon-kotlin'

@@ -14,6 +14,7 @@ import org.axonframework.queryhandling.QueryGateway
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import java.util.*
 
 @SpringBootTest
@@ -25,6 +26,7 @@ class BookTest : BaseTest() {
     lateinit var queryGateway: QueryGateway
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     fun givenReturnedBookWhenQueriedForAllBooksThenBookIsProperlyDefined() = runBlocking {
         val party = Party.User(UUID.randomUUID())
         val borrowingParty = Party.User(UUID.randomUUID())
@@ -54,6 +56,7 @@ class BookTest : BaseTest() {
 
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     fun givenBorrowedBookWhenDifferentPartyReturnsThenFails(): Unit = runBlocking {
         val party = Party.User(UUID.randomUUID())
         val borrowingParty = Party.User(UUID.randomUUID())

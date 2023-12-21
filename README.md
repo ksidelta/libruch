@@ -17,4 +17,6 @@ Backend is available at [http://localhost:8080/](http://localhost:8080/)
 
 ## SWAGGER
 
-http://localhost:8080/swagger-ui.html
+### While docker composing 
+
+http://localhost:8000/swagger-ui.html

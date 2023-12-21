@@ -1,6 +1,10 @@
 package com.ksidelta.libruch.modules.user
 
+import com.ksidelta.libruch.modules.organisation.awaitingEvent
+import kotlinx.coroutines.runBlocking
 import org.axonframework.commandhandling.gateway.CommandGateway
+import org.axonframework.eventhandling.EventBus
+import org.axonframework.messaging.MetaData
 import org.springframework.http.HttpStatus
 import org.springframework.orm.jpa.JpaSystemException
 import org.springframework.retry.annotation.Backoff
@@ -21,7 +25,8 @@ interface UserService {
 @Service
 class UserServiceImpl(
     val userModelRepository: UserModelRepository,
-    val commandGateway: CommandGateway
+    val commandGateway: CommandGateway,
+    val eventBus: EventBus
 ) : UserService {
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -30,6 +35,7 @@ class UserServiceImpl(
         maxAttempts = 5,
         backoff = Backoff(delay = 100, multiplier = 2.0)
     )
+
     @Transactional
     override fun logUser(principal: Principal): UUID {
 
@@ -44,9 +50,10 @@ class UserServiceImpl(
         if (userUUID == null) {
             userUUID = UUID.randomUUID()
 
-            commandGateway.send<Unit>(
-                CreateUser(
-                    ProviderTypeAndUserId(userId.type, userId.userId),
+            userModelRepository.save(
+                UserModel(
+                    UserIdKey(userId.type, userId.userId),
+                    userUUID,
                     userDetails.username
                 )
             )
