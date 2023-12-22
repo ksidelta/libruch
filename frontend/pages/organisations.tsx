@@ -1,3 +1,4 @@
+import { Box, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { AuthorizedLayout } from "../components/Layout";
 import {
   EventListenerContext,
@@ -13,11 +14,24 @@ const Organisation = () => {
     <AuthorizedLayout>
       <EventListenerProvider url={streamURL}>
         <EventListenerContext.Consumer>
-          {(organizationsContext) => (
-            <>
-              Organizancje są takie o:
-              <pre>{JSON.stringify(organizationsContext)}</pre>
-            </>
+          {(ctx) => (
+            <Box
+              sx={{ width: "100%", maxWidth: 360, bgcolor: "#eee" }}
+            >
+              {ctx.data ? (
+                <List>
+                  {(ctx.data.organisations as Array<any>).map((org) => (
+                    <ListItem disablePadding key={org.organisationId}>
+                      <ListItemButton>
+                        <ListItemText primary={org.organisationName} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              ) : (
+                <p>Loading</p>
+              )}
+            </Box>
           )}
         </EventListenerContext.Consumer>
       </EventListenerProvider>

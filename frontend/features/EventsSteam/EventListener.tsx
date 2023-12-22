@@ -7,7 +7,7 @@ import {
 } from "react";
 
 interface EventListenerContextData {
-  data: unknown;
+  data: any;
   listener: EventSource;
 }
 
@@ -22,13 +22,13 @@ export const EventListenerProvider = ({
   url,
   children,
 }: EventListenerProps) => {
-  const [data, setData] = useState<unknown>(null);
+  const [data, setData] = useState<any>(null);
   const [listener, setListener] = useState<EventSource | null>(null);
 
   useEffect(() => {
     const list = new EventSource(url);
     list.onmessage = ({ data }) => {
-      setData(data);
+      setData(JSON.parse(data));
     };
     setListener(list);
   }, []);
