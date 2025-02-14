@@ -2,6 +2,7 @@ package com.ksidelta.libruch.modules.organisation
 
 import com.ksidelta.libruch.BaseTest
 import com.ksidelta.libruch.utils.eventuallyConfigured
+import com.ksidelta.libruch.utils.verifierForEventStream
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
@@ -49,18 +50,7 @@ class OrganisationE2ETest : BaseTest() {
     @Test
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     fun whenOrganisationCreatedThenNewListStreamed(): Unit = runBlocking {
-        val stepVerifier = webTestClient
-            .get()
-            .uri("/api/organisation/stream")
-            .accept(MediaType.TEXT_EVENT_STREAM)
-            .exchange()
-            .expectStatus().isOk
-            .expectHeader().contentTypeCompatibleWith(MediaType.TEXT_EVENT_STREAM)
-            .returnResult(UserOrganisationViewModel::class.java)
-            .responseBody
-            .let {
-                StepVerifier.create(it)
-            }
+        val stepVerifier = webTestClient.verifierForEventStream("/api/organisation/stream", UserOrganisationViewModel::class.java)
 
         createOrganisation("Psiaki").expectStatus().isOk
         eventuallyConfigured {
